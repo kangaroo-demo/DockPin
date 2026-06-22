@@ -99,7 +99,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         menu.addItem(.separator())
         menu.addItem(launchAtLoginItem())
-        menu.addItem(NSMenuItem(title: L10n.t("menu.apply_now"), action: #selector(applyPinnedDockFromMenu), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: L10n.t("menu.refresh"), action: #selector(refreshDisplays), keyEquivalent: "r"))
         menu.addItem(NSMenuItem(title: L10n.t("menu.open_accessibility"), action: #selector(openAccessibilitySettings), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: L10n.t("menu.show_setup_guide"), action: #selector(showOnboardingFromMenu), keyEquivalent: ""))
@@ -338,10 +337,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security") {
             NSWorkspace.shared.open(url)
         }
-    }
-
-    @objc private func applyPinnedDockFromMenu() {
-        applyPinnedDock(after: 0, restoreCursor: false)
     }
 
     @objc private func showOnboardingFromMenu() {

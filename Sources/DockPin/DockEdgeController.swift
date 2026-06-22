@@ -48,8 +48,8 @@ final class DockEdgeController {
     private let adjacencyTolerance: CGFloat = 4
     private let minimumActivationSpan: CGFloat = 24
     private let refreshInterval: TimeInterval = 1.0
-    private let dockActivationPulseCount = 8
-    private let dockActivationPulseInterval: TimeInterval = 0.035
+    private let dockActivationPulseCount = 14
+    private let dockActivationPulseInterval: TimeInterval = 0.055
 
     init(displayManager: DisplayManager, preferences: PreferencesStore) {
         self.displayManager = displayManager
@@ -101,6 +101,7 @@ final class DockEdgeController {
     }
 
     func nudgeSystemDefaultDock(restoreCursor: Bool = true) {
+        refreshAnchor(force: true)
         let edge = DockSystemController.currentEdge()
         guard let display = defaultDisplay(for: edge) else {
             return
@@ -238,7 +239,7 @@ final class DockEdgeController {
             return
         }
 
-        let restoreDelay = TimeInterval(dockActivationPulseCount) * dockActivationPulseInterval + 0.08
+        let restoreDelay = TimeInterval(dockActivationPulseCount) * dockActivationPulseInterval + 0.18
         DispatchQueue.main.asyncAfter(deadline: .now() + restoreDelay) { [weak self] in
             self?.postMouseMove(to: originalLocation)
         }

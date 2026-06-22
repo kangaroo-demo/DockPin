@@ -23,7 +23,6 @@
 "menu.launch_at_login" = "Launch at Login";
 "menu.launch_at_login_requires_approval" = "Launch at Login (Needs Approval)";
 "menu.launch_at_login_unsupported" = "Launch at Login (Unsupported)";
-"menu.apply_now" = "Apply Pin Now";
 "menu.refresh" = "Refresh Displays";
 "menu.open_accessibility" = "Open Accessibility Settings";
 "menu.show_setup_guide" = "Show Setup Guide";

@@ -56,7 +56,6 @@ DockPin 的原理是使用 Quartz event tap 和辅助功能权限，在你选择
 - `保护宽度`：选择 DockPin 保护目标边缘的范围。
 - `穿透延迟`：选择鼠标继续滑动多久后放行到另一块屏幕。
 - `开机自启动`：登录后自动启动 DockPin。
-- `立即应用锚定`：马上把 Dock 引导到当前选择的显示器和边缘。
 - 按住 `Option` 穿过保护边缘，可以立即放行。
 
 关闭 `开启保护` 后，DockPin 会停止事件监听，并把 Dock 轻推回系统默认的外侧显示器边缘。
@@ -98,8 +97,8 @@ swift run DockPin --list-displays
 推送版本 tag 后会自动创建 GitHub Release：
 
 ```sh
-git tag -a v0.1.5 -m "DockPin 0.1.5"
-git push origin v0.1.5
+git tag -a v0.1.6 -m "DockPin 0.1.6"
+git push origin v0.1.6
 ```
 
 Release workflow 会在 macOS 上构建 `dist/DockPin.zip`，并上传到对应的 Release。如果配置了 Apple Developer secrets，也支持 Developer ID 签名和公证。见[签名与公证说明](docs/SIGNING_AND_NOTARIZATION.zh-CN.md)。

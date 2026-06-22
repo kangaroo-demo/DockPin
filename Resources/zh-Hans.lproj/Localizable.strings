@@ -23,7 +23,6 @@
 "menu.launch_at_login" = "开机自启动";
 "menu.launch_at_login_requires_approval" = "开机自启动（需要批准）";
 "menu.launch_at_login_unsupported" = "开机自启动（不支持）";
-"menu.apply_now" = "立即应用锚定";
 "menu.refresh" = "刷新显示器";
 "menu.open_accessibility" = "打开辅助功能设置";
 "menu.show_setup_guide" = "显示设置向导";

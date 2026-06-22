@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.6
+
+- Restored the more reliable Dock activation timing for enabling and disabling protection.
+- Refreshes display topology before nudging the Dock back to the system default edge.
+- Removed the user-facing Apply Pin Now menu item; DockPin now keeps that behavior internal.
+
 ## 0.1.5
 
 - Improved pointer responsiveness by caching display topology instead of querying displays on every mouse event.

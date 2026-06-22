@@ -56,7 +56,6 @@ Click `DockPin` in the menu bar.
 - `Protected Width`: choose how much of that edge DockPin protects.
 - `Pass-through Delay`: choose how long DockPin waits before letting the pointer pass through to another display.
 - `Launch at Login`: start DockPin automatically after login.
-- `Apply Pin Now`: immediately nudges the Dock toward the selected display and edge.
 - Hold `Option` while crossing the protected edge to bypass the gate immediately.
 
 Turning `Enable Protection` off stops DockPin's event tap and nudges the Dock back to the system's default outer display edge.
@@ -98,8 +97,8 @@ swift run DockPin --list-displays
 Push a version tag to create a GitHub Release automatically:
 
 ```sh
-git tag -a v0.1.5 -m "DockPin 0.1.5"
-git push origin v0.1.5
+git tag -a v0.1.6 -m "DockPin 0.1.6"
+git push origin v0.1.6
 ```
 
 The release workflow builds `dist/DockPin.zip` on macOS and uploads it to the release. It also supports Developer ID signing and notarization when Apple Developer secrets are configured. See [Signing and Notarization](docs/SIGNING_AND_NOTARIZATION.md).
