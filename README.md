@@ -1,8 +1,14 @@
 # DockPin
 
-DockPin is a free, open-source macOS menu bar utility that helps keep Dock edge behavior on a display you choose while the app is running.
+[![Latest Release](https://img.shields.io/github/v/release/kangaroo-demo/DockPin?sort=semver)](https://github.com/kangaroo-demo/DockPin/releases/latest)
+[![Download](https://img.shields.io/badge/download-DockPin.zip-blue)](https://github.com/kangaroo-demo/DockPin/releases/latest/download/DockPin.zip)
+![macOS 13+](https://img.shields.io/badge/macOS-13%2B-000000?logo=apple)
+![Swift 5.9](https://img.shields.io/badge/Swift-5.9-F05138?logo=swift)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-It is built for multi-display setups where the Dock keeps moving to the wrong monitor, especially vertical layouts where one display sits above another.
+DockPin is a free, open-source macOS menu bar utility for multi-monitor Dock control. It helps keep the macOS Dock on a target display while the app is running.
+
+It is built for multiple-display setups where the Dock keeps moving to the wrong monitor, especially vertical layouts where one display sits above another.
 
 [Download DockPin.zip](https://github.com/kangaroo-demo/DockPin/releases/latest/download/DockPin.zip) · [All Releases](https://github.com/kangaroo-demo/DockPin/releases)
 
@@ -19,6 +25,8 @@ It is built for multi-display setups where the Dock keeps moving to the wrong mo
 - Supports Launch at Login.
 - Includes a first-run setup guide for Gatekeeper and Accessibility permission.
 - Supports English and Simplified Chinese UI.
+
+Common search terms: macOS Dock utility, multi-monitor Dock fix, multiple displays, menu bar app, Swift, AppKit.
 
 ## What It Does Not Do
 
