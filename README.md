@@ -4,6 +4,8 @@ DockPin is a free, open-source macOS menu bar utility that helps keep Dock edge 
 
 It is built for multi-display setups where the Dock keeps moving to the wrong monitor, especially vertical layouts where one display sits above another.
 
+[Download DockPin.zip](https://github.com/kangaroo-demo/DockPin/releases/latest/download/DockPin.zip) · [All Releases](https://github.com/kangaroo-demo/DockPin/releases)
+
 [简体中文文档](README.zh-CN.md)
 
 ## What It Does
@@ -24,7 +26,7 @@ DockPin works by using a Quartz event tap and Accessibility permission to gently
 
 ## Install
 
-Download `DockPin.zip` from a GitHub Release, unzip it, and move `DockPin.app` to `/Applications`.
+Download the latest [`DockPin.zip`](https://github.com/kangaroo-demo/DockPin/releases/latest/download/DockPin.zip), unzip it, and move `DockPin.app` to `/Applications`.
 
 On first launch:
 
