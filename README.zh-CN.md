@@ -34,6 +34,17 @@ DockPin 的原理是使用 Quartz event tap 和辅助功能权限，在你选择
 2. macOS 提示时授予辅助功能权限。
 3. 如果菜单里显示“需要辅助功能权限”，打开 `系统设置 -> 隐私与安全性 -> 辅助功能`，启用 DockPin，然后退出并重新打开 DockPin。
 
+### 如果 macOS 提示无法验证 DockPin
+
+当前社区构建在维护者配置 Apple Developer ID 签名之前，可能是未签名或未公证的。macOS 如果提示“Apple 无法验证 DockPin”：
+
+1. 点击“完成”，不要点“移到废纸篓”。
+2. 打开 `系统设置 -> 隐私与安全性`。
+3. 在“安全性”区域点击 DockPin 旁边的“仍要打开”。
+4. 再次打开 DockPin，并选择“打开”。
+
+你也可以从源码自行构建，这样可以避免下载包自带的 quarantine 标记。
+
 ## 使用
 
 点击菜单栏里的 `DockPin`。
@@ -86,7 +97,7 @@ git tag -a v0.1.0 -m "DockPin 0.1.0"
 git push origin v0.1.0
 ```
 
-Release workflow 会在 macOS 上构建 `dist/DockPin.zip`，并上传到对应的 Release。
+Release workflow 会在 macOS 上构建 `dist/DockPin.zip`，并上传到对应的 Release。如果配置了 Apple Developer secrets，也支持 Developer ID 签名和公证。见[签名与公证说明](docs/SIGNING_AND_NOTARIZATION.zh-CN.md)。
 
 ## 隐私
 

@@ -34,6 +34,17 @@ On first launch:
 2. Grant Accessibility permission when macOS asks.
 3. If the menu shows `Accessibility Needed`, open `System Settings -> Privacy & Security -> Accessibility`, enable DockPin, then restart DockPin.
 
+### If macOS Says It Cannot Verify DockPin
+
+Current community builds may be unsigned or not notarized unless the maintainer has configured Apple Developer ID signing. If macOS shows `Apple could not verify "DockPin"`:
+
+1. Click `Done`, not `Move to Trash`.
+2. Open `System Settings -> Privacy & Security`.
+3. In the Security section, click `Open Anyway` for DockPin.
+4. Open DockPin again and choose `Open`.
+
+You can also build DockPin from source to avoid downloading a quarantined app bundle.
+
 ## Usage
 
 Click `DockPin` in the menu bar.
@@ -86,7 +97,7 @@ git tag -a v0.1.0 -m "DockPin 0.1.0"
 git push origin v0.1.0
 ```
 
-The release workflow builds `dist/DockPin.zip` on macOS and uploads it to the release.
+The release workflow builds `dist/DockPin.zip` on macOS and uploads it to the release. It also supports Developer ID signing and notarization when Apple Developer secrets are configured. See [Signing and Notarization](docs/SIGNING_AND_NOTARIZATION.md).
 
 ## Privacy
 

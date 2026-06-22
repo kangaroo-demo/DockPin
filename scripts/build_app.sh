@@ -7,6 +7,7 @@ APP_DIR="$ROOT_DIR/dist/DockPin.app"
 CONTENTS_DIR="$APP_DIR/Contents"
 MACOS_DIR="$CONTENTS_DIR/MacOS"
 RESOURCES_DIR="$CONTENTS_DIR/Resources"
+CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY:--}"
 
 cd "$ROOT_DIR"
 
@@ -24,7 +25,13 @@ if [[ -d Resources ]]; then
 fi
 
 xattr -cr "$APP_DIR" || true
-codesign --force --deep --sign - "$APP_DIR"
+
+CODE_SIGN_ARGS=(--force --deep --sign "$CODE_SIGN_IDENTITY")
+if [[ "$CODE_SIGN_IDENTITY" != "-" ]]; then
+  CODE_SIGN_ARGS+=(--timestamp --options runtime)
+fi
+
+codesign "${CODE_SIGN_ARGS[@]}" "$APP_DIR"
 codesign --verify --deep --strict --verbose=2 "$APP_DIR"
 
 echo "Built $APP_DIR"
