@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4
+
+- Fixed pin activation for stacked displays where the target display edge is partly covered by another display.
+- DockPin now nudges and gates the nearest exposed real edge segment instead of always using the center of the selected edge.
+- This improves layouts such as an external display above a built-in Retina display, where the Dock should remain on the upper display.
+
 ## 0.1.3
 
 - Fixed re-enabling protection not reliably moving the Dock back to the pinned display.

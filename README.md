@@ -98,8 +98,8 @@ swift run DockPin --list-displays
 Push a version tag to create a GitHub Release automatically:
 
 ```sh
-git tag -a v0.1.3 -m "DockPin 0.1.3"
-git push origin v0.1.3
+git tag -a v0.1.4 -m "DockPin 0.1.4"
+git push origin v0.1.4
 ```
 
 The release workflow builds `dist/DockPin.zip` on macOS and uploads it to the release. It also supports Developer ID signing and notarization when Apple Developer secrets are configured. See [Signing and Notarization](docs/SIGNING_AND_NOTARIZATION.md).
@@ -119,6 +119,8 @@ Enable DockPin in `System Settings -> Privacy & Security -> Accessibility`, then
 ### The Dock still moves to the wrong display
 
 Try increasing `Protected Width` or `Pass-through Delay`. Also confirm the selected `Dock Edge` matches your macOS Dock position.
+
+For stacked layouts, DockPin activates the nearest exposed part of the target display edge. If another display completely covers the selected edge, macOS may not expose a public way for DockPin to force that edge reliably.
 
 ### I cannot move to the other display
 

@@ -98,8 +98,8 @@ swift run DockPin --list-displays
 推送版本 tag 后会自动创建 GitHub Release：
 
 ```sh
-git tag -a v0.1.3 -m "DockPin 0.1.3"
-git push origin v0.1.3
+git tag -a v0.1.4 -m "DockPin 0.1.4"
+git push origin v0.1.4
 ```
 
 Release workflow 会在 macOS 上构建 `dist/DockPin.zip`，并上传到对应的 Release。如果配置了 Apple Developer secrets，也支持 Developer ID 签名和公证。见[签名与公证说明](docs/SIGNING_AND_NOTARIZATION.zh-CN.md)。
@@ -119,6 +119,8 @@ DockPin 不收集分析数据，不发起网络请求，也不存储个人数据
 ### Dock 还是跑到错误的显示器
 
 尝试调大“保护宽度”或“穿透延迟”。同时确认 `Dock 边缘` 和 macOS 系统设置里的 Dock 位置一致。
+
+在上下排列的屏幕布局中，DockPin 会使用目标显示器边缘上没有被另一块屏幕覆盖的真实外边缘。如果另一块屏幕完全覆盖了所选边缘，macOS 公开能力下可能无法稳定强制这条边缘。
 
 ### 鼠标不容易移动到另一块屏幕
 

@@ -2,6 +2,37 @@ import CoreGraphics
 import Foundation
 
 final class DockEdgeController {
+    private struct EdgeSegment {
+        let start: CGFloat
+        let end: CGFloat
+
+        var length: CGFloat {
+            max(0, end - start)
+        }
+
+        var midpoint: CGFloat {
+            (start + end) / 2
+        }
+
+        func contains(_ value: CGFloat) -> Bool {
+            value >= start && value <= end
+        }
+
+        func distance(to value: CGFloat) -> CGFloat {
+            if contains(value) {
+                return 0
+            }
+            return min(abs(value - start), abs(value - end))
+        }
+
+        func clampedValue(_ value: CGFloat, margin: CGFloat) -> CGFloat {
+            guard length > margin * 2 else {
+                return midpoint
+            }
+            return min(max(value, start + margin), end - margin)
+        }
+    }
+
     private let displayManager: DisplayManager
     private let preferences: PreferencesStore
 
@@ -12,6 +43,9 @@ final class DockEdgeController {
 
     private let edgeBand: CGFloat = 72
     private let clampInset: CGFloat = 1
+    private let activationMargin: CGFloat = 10
+    private let adjacencyTolerance: CGFloat = 4
+    private let minimumActivationSpan: CGFloat = 24
     private let refreshInterval: TimeInterval = 1.0
     private let dockActivationPulseCount = 14
     private let dockActivationPulseInterval: TimeInterval = 0.055
@@ -97,7 +131,7 @@ final class DockEdgeController {
             return event
         }
 
-        let clamped = clampedPoint(from: location, bounds: anchor.bounds, edge: edge)
+        let clamped = clampedPoint(from: location, display: anchor, edge: edge)
         if hypot(location.x - clamped.x, location.y - clamped.y) < 0.5 {
             return event
         }
@@ -134,14 +168,30 @@ final class DockEdgeController {
         }
     }
 
-    private func clampedPoint(from point: CGPoint, bounds: CGRect, edge: DockEdge) -> CGPoint {
+    private func clampedPoint(from point: CGPoint, display: DisplayInfo, edge: DockEdge) -> CGPoint {
+        let bounds = display.bounds
         switch edge {
         case .bottom:
-            return CGPoint(x: point.x, y: bounds.maxY - clampInset)
+            let segment = preferredSegment(
+                for: exposedSegments(of: display, edge: edge),
+                reference: point.x
+            )
+            let x = segment.clampedValue(point.x, margin: activationMargin)
+            return CGPoint(x: x, y: bounds.maxY - clampInset)
         case .left:
-            return CGPoint(x: bounds.minX + clampInset, y: point.y)
+            let segment = preferredSegment(
+                for: exposedSegments(of: display, edge: edge),
+                reference: point.y
+            )
+            let y = segment.clampedValue(point.y, margin: activationMargin)
+            return CGPoint(x: bounds.minX + clampInset, y: y)
         case .right:
-            return CGPoint(x: bounds.maxX - clampInset, y: point.y)
+            let segment = preferredSegment(
+                for: exposedSegments(of: display, edge: edge),
+                reference: point.y
+            )
+            let y = segment.clampedValue(point.y, margin: activationMargin)
+            return CGPoint(x: bounds.maxX - clampInset, y: y)
         }
     }
 
@@ -166,7 +216,7 @@ final class DockEdgeController {
             let delay = TimeInterval(index) * dockActivationPulseInterval
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
                 guard let self else { return }
-                let point = self.pointInsideEdge(bounds: display.bounds, edge: edge, offset: index)
+                let point = self.pointInsideEdge(display: display, edge: edge, offset: index, reference: originalLocation)
                 self.postMouseMove(to: point)
             }
         }
@@ -181,16 +231,113 @@ final class DockEdgeController {
         }
     }
 
-    private func pointInsideEdge(bounds: CGRect, edge: DockEdge, offset: Int = 0) -> CGPoint {
-        let wobble = CGFloat((offset % 3) - 1) * 3
+    private func pointInsideEdge(display: DisplayInfo, edge: DockEdge, offset: Int = 0, reference: CGPoint?) -> CGPoint {
+        let bounds = display.bounds
+        let wobble = CGFloat((offset % 5) - 2) * 4
+
         switch edge {
         case .bottom:
-            return CGPoint(x: bounds.midX + wobble, y: bounds.maxY - clampInset)
+            let referenceX = reference?.x ?? bounds.midX
+            let segment = preferredSegment(
+                for: exposedSegments(of: display, edge: edge),
+                reference: referenceX
+            )
+            let x = segment.clampedValue(referenceX + wobble, margin: activationMargin)
+            return CGPoint(x: x, y: bounds.maxY - clampInset)
         case .left:
-            return CGPoint(x: bounds.minX + clampInset, y: bounds.midY + wobble)
+            let referenceY = reference?.y ?? bounds.midY
+            let segment = preferredSegment(
+                for: exposedSegments(of: display, edge: edge),
+                reference: referenceY
+            )
+            let y = segment.clampedValue(referenceY + wobble, margin: activationMargin)
+            return CGPoint(x: bounds.minX + clampInset, y: y)
         case .right:
-            return CGPoint(x: bounds.maxX - clampInset, y: bounds.midY + wobble)
+            let referenceY = reference?.y ?? bounds.midY
+            let segment = preferredSegment(
+                for: exposedSegments(of: display, edge: edge),
+                reference: referenceY
+            )
+            let y = segment.clampedValue(referenceY + wobble, margin: activationMargin)
+            return CGPoint(x: bounds.maxX - clampInset, y: y)
         }
+    }
+
+    private func exposedSegments(of display: DisplayInfo, edge: DockEdge) -> [EdgeSegment] {
+        let bounds = display.bounds
+        let otherBounds = displayManager.displays()
+            .filter { $0.id != display.id }
+            .map(\.bounds)
+
+        var segments: [EdgeSegment]
+        switch edge {
+        case .bottom:
+            segments = [EdgeSegment(start: bounds.minX, end: bounds.maxX)]
+            for other in otherBounds where abs(other.minY - bounds.maxY) <= adjacencyTolerance {
+                segments = subtract(
+                    EdgeSegment(start: max(bounds.minX, other.minX), end: min(bounds.maxX, other.maxX)),
+                    from: segments
+                )
+            }
+            return validSegments(segments, fallback: EdgeSegment(start: bounds.minX, end: bounds.maxX))
+
+        case .left:
+            segments = [EdgeSegment(start: bounds.minY, end: bounds.maxY)]
+            for other in otherBounds where abs(other.maxX - bounds.minX) <= adjacencyTolerance {
+                segments = subtract(
+                    EdgeSegment(start: max(bounds.minY, other.minY), end: min(bounds.maxY, other.maxY)),
+                    from: segments
+                )
+            }
+            return validSegments(segments, fallback: EdgeSegment(start: bounds.minY, end: bounds.maxY))
+
+        case .right:
+            segments = [EdgeSegment(start: bounds.minY, end: bounds.maxY)]
+            for other in otherBounds where abs(other.minX - bounds.maxX) <= adjacencyTolerance {
+                segments = subtract(
+                    EdgeSegment(start: max(bounds.minY, other.minY), end: min(bounds.maxY, other.maxY)),
+                    from: segments
+                )
+            }
+            return validSegments(segments, fallback: EdgeSegment(start: bounds.minY, end: bounds.maxY))
+        }
+    }
+
+    private func subtract(_ cut: EdgeSegment, from segments: [EdgeSegment]) -> [EdgeSegment] {
+        guard cut.length > 0 else {
+            return segments
+        }
+
+        return segments.flatMap { segment -> [EdgeSegment] in
+            if cut.end <= segment.start || cut.start >= segment.end {
+                return [segment]
+            }
+
+            var remaining: [EdgeSegment] = []
+            if cut.start > segment.start {
+                remaining.append(EdgeSegment(start: segment.start, end: min(cut.start, segment.end)))
+            }
+            if cut.end < segment.end {
+                remaining.append(EdgeSegment(start: max(cut.end, segment.start), end: segment.end))
+            }
+            return remaining
+        }
+    }
+
+    private func validSegments(_ segments: [EdgeSegment], fallback: EdgeSegment) -> [EdgeSegment] {
+        let valid = segments.filter { $0.length >= minimumActivationSpan }
+        return valid.isEmpty ? [fallback] : valid
+    }
+
+    private func preferredSegment(for segments: [EdgeSegment], reference: CGFloat) -> EdgeSegment {
+        segments.min { lhs, rhs in
+            let lhsDistance = lhs.distance(to: reference)
+            let rhsDistance = rhs.distance(to: reference)
+            if abs(lhsDistance - rhsDistance) > 0.5 {
+                return lhsDistance < rhsDistance
+            }
+            return lhs.length > rhs.length
+        } ?? EdgeSegment(start: reference, end: reference)
     }
 
     private func postMouseMove(to point: CGPoint) {
