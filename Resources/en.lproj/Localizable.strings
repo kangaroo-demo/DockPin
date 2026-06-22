@@ -1,0 +1,35 @@
+"display.main_format" = "%@ (Main)";
+
+"edge.bottom" = "Bottom";
+"edge.left" = "Left";
+"edge.right" = "Right";
+
+"status.protection_on" = "Protection: On";
+"status.protection_off" = "Protection: Off";
+"status.permission_needed" = "Accessibility Needed";
+"status.event_tap_ok" = "Event Tap OK";
+"status.event_tap_unavailable" = "Event Tap Unavailable";
+"status.event_tap_stopped" = "Event Tap Stopped";
+
+"menu.anchor_format" = "Anchor: %@";
+"menu.anchor_missing" = "Anchor: not found";
+"menu.turn_off" = "Turn Off Protection";
+"menu.turn_on" = "Turn On Protection";
+"menu.display" = "Anchor Display";
+"menu.edge" = "Dock Edge";
+"menu.protected_width" = "Protected Width";
+"menu.pass_through_delay" = "Pass-through Delay";
+"menu.percent_format" = "%d%%";
+"menu.seconds_format" = "%.2fs";
+"menu.launch_at_login" = "Launch at Login";
+"menu.launch_at_login_requires_approval" = "Launch at Login (Needs Approval)";
+"menu.launch_at_login_unsupported" = "Launch at Login (Unsupported)";
+"menu.refresh" = "Refresh Displays";
+"menu.open_accessibility" = "Open Accessibility Settings";
+"menu.about" = "About DockPin";
+"menu.quit" = "Quit";
+
+"about.body" = "DockPin is a free, open-source macOS menu bar utility that helps keep the Dock behavior pinned to a selected display. It uses Accessibility permission only to observe and gently clamp pointer movement near your chosen Dock edge.";
+
+"error.launch_at_login_failed" = "Could not update Launch at Login";
+"button.ok" = "OK";

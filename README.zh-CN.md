@@ -1,0 +1,111 @@
+# DockPin
+
+DockPin 是一个免费开源的 macOS 菜单栏小工具，用来帮助 Dock 的边缘行为固定在你选择的显示器上。
+
+它主要解决多显示器场景里 Dock 跑错屏的问题，尤其是上下排列显示器时，比如外接屏在上方、MacBook 内置屏在下方。
+
+[English README](README.md)
+
+## 它能做什么
+
+- 作为轻量菜单栏 App 常驻运行。
+- 可以选择目标显示器。
+- 支持 Dock 的底部、左侧、右侧边缘。
+- 在目标显示器的指定边缘做“软拦截”，帮助 macOS 把这条边当作 Dock 边缘，同时保留正常跨屏移动。
+- 可以调整保护宽度和穿透延迟。
+- 支持开机自启动。
+- 支持英文和简体中文界面。
+
+## 它不能做什么
+
+macOS 没有公开 API 可以直接把 Dock 指定到某个显示器。DockPin 不会修改 Dock、不改系统文件、不注入 Dock 进程，也不使用私有 API。
+
+DockPin 的原理是使用 Quartz event tap 和辅助功能权限，在你选择的 Dock 边缘附近轻量限制鼠标移动，让 macOS 更容易把该显示器边缘视为 Dock 边缘。
+
+## 安装
+
+从 GitHub Release 下载 `DockPin.zip`，解压后把 `DockPin.app` 移到 `/Applications`。
+
+第一次启动：
+
+1. 打开 `DockPin.app`。
+2. macOS 提示时授予辅助功能权限。
+3. 如果菜单里显示“需要辅助功能权限”，打开 `系统设置 -> 隐私与安全性 -> 辅助功能`，启用 DockPin，然后退出并重新打开 DockPin。
+
+## 使用
+
+点击菜单栏里的 `DockPin`。
+
+- `锚定显示器`：选择你希望 Dock 固定/优先停留的显示器。
+- `Dock 边缘`：选择底部、左侧或右侧。
+- `保护宽度`：选择 DockPin 保护目标边缘的范围。
+- `穿透延迟`：选择鼠标继续滑动多久后放行到另一块屏幕。
+- `开机自启动`：登录后自动启动 DockPin。
+- 按住 `Option` 穿过保护边缘，可以立即放行。
+
+## 推荐设置
+
+如果你的外接屏在上方、内置 Retina 屏在下方：
+
+- 锚定显示器：外接显示器
+- Dock 边缘：底部
+- 保护宽度：40%
+- 穿透延迟：0.45 秒
+
+## 从源码构建
+
+要求：
+
+- macOS 13 或更新版本
+- Xcode Command Line Tools
+- Swift 5.9 或更新版本
+
+构建并打包：
+
+```sh
+git clone git@github.com:kangaroo-demo/DockPin.git
+cd DockPin
+./scripts/package_release.sh
+open dist/DockPin.app
+```
+
+只列出显示器，不启动菜单栏 App：
+
+```sh
+swift run DockPin --list-displays
+```
+
+## 发布
+
+推送版本 tag 后会自动创建 GitHub Release：
+
+```sh
+git tag -a v0.1.0 -m "DockPin 0.1.0"
+git push origin v0.1.0
+```
+
+Release workflow 会在 macOS 上构建 `dist/DockPin.zip`，并上传到对应的 Release。
+
+## 隐私
+
+DockPin 不收集分析数据，不发起网络请求，也不存储个人数据。设置只通过 `UserDefaults` 保存在本机。
+
+辅助功能权限只用于观察鼠标移动，并在目标边缘应用软拦截。
+
+## 常见问题
+
+### 菜单显示“需要辅助功能权限”
+
+在 `系统设置 -> 隐私与安全性 -> 辅助功能` 中启用 DockPin，然后退出并重新打开 DockPin。
+
+### Dock 还是跑到错误的显示器
+
+尝试调大“保护宽度”或“穿透延迟”。同时确认 `Dock 边缘` 和 macOS 系统设置里的 Dock 位置一致。
+
+### 鼠标不容易移动到另一块屏幕
+
+调低“保护宽度”、调低“穿透延迟”、从未保护的边缘区域穿过，或者按住 `Option` 穿过。
+
+## 许可证
+
+MIT

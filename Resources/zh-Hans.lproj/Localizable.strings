@@ -1,0 +1,35 @@
+"display.main_format" = "%@（主显示器）";
+
+"edge.bottom" = "底部";
+"edge.left" = "左侧";
+"edge.right" = "右侧";
+
+"status.protection_on" = "保护：开启";
+"status.protection_off" = "保护：关闭";
+"status.permission_needed" = "需要辅助功能权限";
+"status.event_tap_ok" = "事件监听正常";
+"status.event_tap_unavailable" = "事件监听不可用";
+"status.event_tap_stopped" = "事件监听已停止";
+
+"menu.anchor_format" = "锚定：%@";
+"menu.anchor_missing" = "锚定：未找到显示器";
+"menu.turn_off" = "关闭保护";
+"menu.turn_on" = "开启保护";
+"menu.display" = "锚定显示器";
+"menu.edge" = "Dock 边缘";
+"menu.protected_width" = "保护宽度";
+"menu.pass_through_delay" = "穿透延迟";
+"menu.percent_format" = "%d%%";
+"menu.seconds_format" = "%.2f 秒";
+"menu.launch_at_login" = "开机自启动";
+"menu.launch_at_login_requires_approval" = "开机自启动（需要批准）";
+"menu.launch_at_login_unsupported" = "开机自启动（不支持）";
+"menu.refresh" = "刷新显示器";
+"menu.open_accessibility" = "打开辅助功能设置";
+"menu.about" = "关于 DockPin";
+"menu.quit" = "退出";
+
+"about.body" = "DockPin 是一个免费开源的 macOS 菜单栏小工具，用来帮助 Dock 行为固定在你选择的显示器上。它只使用辅助功能权限来观察鼠标移动，并在你选择的 Dock 边缘附近进行轻量软拦截。";
+
+"error.launch_at_login_failed" = "无法更新开机自启动";
+"button.ok" = "好";
