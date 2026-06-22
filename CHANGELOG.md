@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.9
+
+- Simplified the app icon for better readability at Dock and Finder sizes.
+- Simplified the menu bar status icon.
+
 ## 0.1.8
 
 - Improved the first-run setup guide with clearer Gatekeeper, Accessibility, and target display steps.

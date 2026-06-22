@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import math
 import shutil
 import subprocess
 from pathlib import Path
@@ -33,24 +32,13 @@ def vertical_gradient(size: int, top: tuple[int, int, int], bottom: tuple[int, i
     return image
 
 
-def pin_points(cx: float, cy: float, radius: float) -> list[tuple[float, float]]:
-    return [
-        (cx, cy + radius * 1.75),
-        (cx - radius * 0.95, cy + radius * 0.2),
-        (cx - radius * 0.75, cy - radius * 0.65),
-        (cx, cy - radius),
-        (cx + radius * 0.75, cy - radius * 0.65),
-        (cx + radius * 0.95, cy + radius * 0.2),
-    ]
-
-
 def draw_app_icon(size: int) -> Image.Image:
     scale = size / 1024
     image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
 
     shadow = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     shadow_draw = ImageDraw.Draw(shadow)
-    inset = int(42 * scale)
+    inset = int(46 * scale)
     radius = int(210 * scale)
     shadow_draw.rounded_rectangle(
         (inset, inset + int(18 * scale), size - inset, size - inset + int(18 * scale)),
@@ -61,69 +49,62 @@ def draw_app_icon(size: int) -> Image.Image:
     image.alpha_composite(shadow)
 
     mask = rounded_rectangle_mask(size - inset * 2, radius)
-    background = vertical_gradient(size - inset * 2, (18, 142, 255), (20, 86, 210))
+    background = vertical_gradient(size - inset * 2, (22, 145, 255), (0, 100, 210))
     icon_body = Image.new("RGBA", (size - inset * 2, size - inset * 2), (0, 0, 0, 0))
     icon_body.alpha_composite(background)
 
     body_draw = ImageDraw.Draw(icon_body)
+    side = size - inset * 2
     body_draw.rounded_rectangle(
-        (int(46 * scale), int(48 * scale), size - inset * 2 - int(46 * scale), size - inset * 2 - int(46 * scale)),
+        (int(48 * scale), int(50 * scale), side - int(48 * scale), side - int(48 * scale)),
         radius=int(164 * scale),
-        outline=(255, 255, 255, 55),
-        width=max(2, int(8 * scale)),
+        outline=(255, 255, 255, 36),
+        width=max(2, int(6 * scale)),
     )
 
-    body_draw.rectangle(
-        (int(170 * scale), int(686 * scale), size - inset * 2 - int(170 * scale), int(742 * scale)),
-        fill=(255, 255, 255, 210),
+    # Keep the mark intentionally simple so it stays readable at Dock size:
+    # one display, one Dock edge, one pin dot.
+    screen = (
+        int(side * 0.22),
+        int(side * 0.28),
+        int(side * 0.78),
+        int(side * 0.60),
     )
     body_draw.rounded_rectangle(
-        (int(210 * scale), int(250 * scale), size - inset * 2 - int(210 * scale), int(642 * scale)),
-        radius=int(44 * scale),
-        fill=(236, 247, 255, 248),
+        screen,
+        radius=int(42 * scale),
+        outline=(236, 247, 255, 248),
+        width=max(8, int(48 * scale)),
     )
     body_draw.rounded_rectangle(
-        (int(252 * scale), int(292 * scale), size - inset * 2 - int(252 * scale), int(582 * scale)),
-        radius=int(28 * scale),
-        fill=(39, 123, 220, 35),
+        (int(side * 0.28), int(side * 0.68), int(side * 0.72), int(side * 0.725)),
+        radius=int(18 * scale),
+        fill=(255, 255, 255, 232),
     )
-    body_draw.rectangle(
-        (int(342 * scale), int(646 * scale), size - inset * 2 - int(342 * scale), int(690 * scale)),
-        fill=(236, 247, 255, 248),
+
+    pin_cx = side * 0.71
+    pin_cy = side * 0.31
+    pin_r = side * 0.095
+    body_draw.ellipse(
+        (
+            pin_cx - pin_r + int(8 * scale),
+            pin_cy - pin_r + int(10 * scale),
+            pin_cx + pin_r + int(8 * scale),
+            pin_cy + pin_r + int(10 * scale),
+        ),
+        fill=(0, 72, 145, 42),
+    )
+    body_draw.ellipse(
+        (pin_cx - pin_r, pin_cy - pin_r, pin_cx + pin_r, pin_cy + pin_r),
+        fill=(34, 197, 94, 255),
+    )
+    body_draw.ellipse(
+        (pin_cx - pin_r * 0.42, pin_cy - pin_r * 0.42, pin_cx + pin_r * 0.42, pin_cy + pin_r * 0.42),
+        fill=(255, 255, 255, 245),
     )
 
     icon_body.putalpha(Image.composite(mask, Image.new("L", mask.size, 0), mask))
     image.alpha_composite(icon_body, (inset, inset))
-
-    overlay = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(overlay)
-    cx = size * 0.66
-    cy = size * 0.42
-    radius_pin = size * 0.145
-
-    pin_shadow = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    pin_shadow_draw = ImageDraw.Draw(pin_shadow)
-    pin_shadow_draw.polygon(pin_points(cx, cy + size * 0.02, radius_pin), fill=(0, 0, 0, 85))
-    pin_shadow = pin_shadow.filter(ImageFilter.GaussianBlur(int(10 * scale)))
-    overlay.alpha_composite(pin_shadow)
-
-    draw.polygon(pin_points(cx, cy, radius_pin), fill=(0, 199, 125, 255))
-    draw.ellipse(
-        (cx - radius_pin * 0.58, cy - radius_pin * 0.58, cx + radius_pin * 0.58, cy + radius_pin * 0.58),
-        fill=(255, 255, 255, 245),
-    )
-    draw.ellipse(
-        (cx - radius_pin * 0.28, cy - radius_pin * 0.28, cx + radius_pin * 0.28, cy + radius_pin * 0.28),
-        fill=(20, 110, 220, 255),
-    )
-
-    # A small dock-edge line under the pin ties the icon to the app's purpose.
-    draw.rounded_rectangle(
-        (size * 0.38, size * 0.70, size * 0.74, size * 0.745),
-        radius=size * 0.02,
-        fill=(255, 255, 255, 225),
-    )
-    image.alpha_composite(overlay)
     return image
 
 
@@ -134,17 +115,17 @@ def draw_status_icon(size: int) -> Image.Image:
     stroke = max(1, round(1.7 * scale))
 
     draw.rounded_rectangle(
-        (2.5 * scale, 3.0 * scale, 15.5 * scale, 12.2 * scale),
+        (2.5 * scale, 3.1 * scale, 15.5 * scale, 12.3 * scale),
         radius=2.0 * scale,
         outline=(0, 0, 0, 255),
         width=stroke,
     )
-    draw.line((5.2 * scale, 14.5 * scale, 12.8 * scale, 14.5 * scale), fill=(0, 0, 0, 255), width=stroke)
-    draw.line((9.0 * scale, 12.4 * scale, 9.0 * scale, 14.2 * scale), fill=(0, 0, 0, 255), width=stroke)
+    draw.line((5.4 * scale, 14.5 * scale, 12.6 * scale, 14.5 * scale), fill=(0, 0, 0, 255), width=stroke)
 
-    cx, cy, radius = 12.4 * scale, 6.3 * scale, 2.5 * scale
-    draw.polygon(pin_points(cx, cy, radius), fill=(0, 0, 0, 255))
-    draw.ellipse((cx - 1.0 * scale, cy - 1.0 * scale, cx + 1.0 * scale, cy + 1.0 * scale), fill=(0, 0, 0, 0))
+    cx, cy, radius = 12.8 * scale, 5.6 * scale, 2.2 * scale
+    draw.ellipse((cx - radius, cy - radius, cx + radius, cy + radius), fill=(0, 0, 0, 255))
+    inner = 0.75 * scale
+    draw.ellipse((cx - inner, cy - inner, cx + inner, cy + inner), fill=(0, 0, 0, 0))
     return image
 
 
