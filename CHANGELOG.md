@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.2
+
+- Added first-run setup guide for Gatekeeper and Accessibility permission.
+- Stopped showing the Accessibility permission prompt automatically on every launch.
+- Protection now starts and stops the event tap instead of only toggling an internal flag.
+- Turning protection off nudges the Dock back to the system default outer display edge.
+- Selecting Dock edge now syncs the macOS Dock orientation and applies the pin.
+- Selecting anchor display now applies the pin immediately.
+- Startup now reapplies the saved pin when protection is enabled.
+
 ## 0.1.1
 
 - Added DockPin app icon and menu bar icon.

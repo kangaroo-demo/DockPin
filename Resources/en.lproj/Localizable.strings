@@ -23,12 +23,28 @@
 "menu.launch_at_login" = "Launch at Login";
 "menu.launch_at_login_requires_approval" = "Launch at Login (Needs Approval)";
 "menu.launch_at_login_unsupported" = "Launch at Login (Unsupported)";
+"menu.apply_now" = "Apply Pin Now";
 "menu.refresh" = "Refresh Displays";
 "menu.open_accessibility" = "Open Accessibility Settings";
+"menu.show_setup_guide" = "Show Setup Guide";
 "menu.about" = "About DockPin";
 "menu.quit" = "Quit";
 
 "about.body" = "DockPin is a free, open-source macOS menu bar utility that helps keep the Dock behavior pinned to a selected display. It uses Accessibility permission only to observe and gently clamp pointer movement near your chosen Dock edge.";
+
+"onboarding.title" = "DockPin Setup";
+"onboarding.heading" = "Set up DockPin";
+"onboarding.body" = "DockPin needs a couple of macOS permissions and settings before it can guide the Dock reliably.";
+"onboarding.step_gatekeeper_title" = "If macOS blocks the app";
+"onboarding.step_gatekeeper_body" = "For community builds, click Done in the warning, then open Privacy & Security and choose Open Anyway for DockPin.";
+"onboarding.open_security" = "Open Privacy & Security";
+"onboarding.step_accessibility_title" = "Enable Accessibility";
+"onboarding.step_accessibility_body" = "DockPin uses Accessibility permission only to observe pointer movement and apply the soft edge gate.";
+"onboarding.open_accessibility" = "Open Accessibility";
+"onboarding.recheck" = "Recheck";
+"onboarding.done" = "Done";
+"onboarding.accessibility_granted" = "Accessibility permission is enabled.";
+"onboarding.accessibility_missing" = "Accessibility permission is not enabled yet.";
 
 "error.launch_at_login_failed" = "Could not update Launch at Login";
 "button.ok" = "OK";

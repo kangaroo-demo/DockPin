@@ -23,12 +23,28 @@
 "menu.launch_at_login" = "开机自启动";
 "menu.launch_at_login_requires_approval" = "开机自启动（需要批准）";
 "menu.launch_at_login_unsupported" = "开机自启动（不支持）";
+"menu.apply_now" = "立即应用锚定";
 "menu.refresh" = "刷新显示器";
 "menu.open_accessibility" = "打开辅助功能设置";
+"menu.show_setup_guide" = "显示设置向导";
 "menu.about" = "关于 DockPin";
 "menu.quit" = "退出";
 
 "about.body" = "DockPin 是一个免费开源的 macOS 菜单栏小工具，用来帮助 Dock 行为固定在你选择的显示器上。它只使用辅助功能权限来观察鼠标移动，并在你选择的 Dock 边缘附近进行轻量软拦截。";
+
+"onboarding.title" = "DockPin 设置";
+"onboarding.heading" = "设置 DockPin";
+"onboarding.body" = "DockPin 需要几个 macOS 权限和设置，才能更稳定地引导 Dock 留在目标显示器。";
+"onboarding.step_gatekeeper_title" = "如果 macOS 拦截应用";
+"onboarding.step_gatekeeper_body" = "社区构建可能会出现无法验证提示。先点“完成”，再进入“隐私与安全性”，为 DockPin 选择“仍要打开”。";
+"onboarding.open_security" = "打开隐私与安全性";
+"onboarding.step_accessibility_title" = "启用辅助功能";
+"onboarding.step_accessibility_body" = "DockPin 只使用辅助功能权限观察鼠标移动，并在目标边缘应用软拦截。";
+"onboarding.open_accessibility" = "打开辅助功能";
+"onboarding.recheck" = "重新检查";
+"onboarding.done" = "完成";
+"onboarding.accessibility_granted" = "辅助功能权限已启用。";
+"onboarding.accessibility_missing" = "辅助功能权限尚未启用。";
 
 "error.launch_at_login_failed" = "无法更新开机自启动";
 "button.ok" = "好";

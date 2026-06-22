@@ -18,13 +18,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var statusItem: NSStatusItem?
     private let menu = NSMenu()
     private var refreshTimer: Timer?
+    private var onboardingWindowController: OnboardingWindowController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
         setupStatusItem()
-        requestAccessibilityIfNeeded()
-        eventTapController.start()
+        syncEventTapWithProtection()
         rebuildMenu()
+        showOnboardingIfNeeded()
+        applyPinnedDock(after: 0.35)
 
         NotificationCenter.default.addObserver(
             self,
@@ -71,15 +73,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         rebuildMenu()
     }
 
-    private func requestAccessibilityIfNeeded() {
-        guard !AXIsProcessTrusted() else {
-            return
-        }
-
-        let options = ["AXTrustedCheckOptionPrompt": true] as CFDictionary
-        AXIsProcessTrustedWithOptions(options)
-    }
-
     private func rebuildMenu() {
         menu.removeAllItems()
 
@@ -106,8 +99,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         menu.addItem(.separator())
         menu.addItem(launchAtLoginItem())
+        menu.addItem(NSMenuItem(title: L10n.t("menu.apply_now"), action: #selector(applyPinnedDockFromMenu), keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: L10n.t("menu.refresh"), action: #selector(refreshDisplays), keyEquivalent: "r"))
         menu.addItem(NSMenuItem(title: L10n.t("menu.open_accessibility"), action: #selector(openAccessibilitySettings), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: L10n.t("menu.show_setup_guide"), action: #selector(showOnboardingFromMenu), keyEquivalent: ""))
 
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: L10n.t("menu.about"), action: #selector(showAbout), keyEquivalent: ""))
@@ -262,6 +257,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     @objc private func toggleProtection() {
         preferences.isProtectionEnabled.toggle()
+        syncEventTapWithProtection()
+        if preferences.isProtectionEnabled {
+            applyPinnedDock(after: 0.12)
+        } else {
+            edgeController.resetGate()
+            edgeController.nudgeSystemDefaultDock()
+        }
         rebuildMenu()
     }
 
@@ -276,6 +278,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         preferences.selectedDisplayUUID = payload["uuid"]?.isEmpty == false ? payload["uuid"] : nil
         preferences.selectedDisplayName = name
         edgeController.refreshAnchor(force: true)
+        applyPinnedDock(after: 0.08)
         rebuildMenu()
     }
 
@@ -288,6 +291,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
 
         preferences.dockEdge = edge
+        DockSystemController.setDockEdge(edge)
+        syncEventTapWithProtection()
+        applyPinnedDock(after: 0.70)
         rebuildMenu()
     }
 
@@ -318,7 +324,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     @objc private func refreshDisplays() {
         edgeController.refreshAnchor(force: true)
-        eventTapController.retryIfNeeded()
+        syncEventTapWithProtection()
         rebuildMenu()
     }
 
@@ -326,6 +332,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") {
             NSWorkspace.shared.open(url)
         }
+    }
+
+    @objc private func openSecuritySettings() {
+        if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security") {
+            NSWorkspace.shared.open(url)
+        }
+    }
+
+    @objc private func applyPinnedDockFromMenu() {
+        applyPinnedDock(after: 0)
+    }
+
+    @objc private func showOnboardingFromMenu() {
+        showOnboarding(markAsFirstRun: false)
     }
 
     @objc private func showAbout() {
@@ -342,7 +362,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func periodicRefresh() {
-        eventTapController.retryIfNeeded()
+        syncEventTapWithProtection()
         edgeController.refreshAnchor()
     }
 
@@ -353,5 +373,54 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         alert.informativeText = details
         alert.addButton(withTitle: L10n.t("button.ok"))
         alert.runModal()
+    }
+
+    private func syncEventTapWithProtection() {
+        guard preferences.isProtectionEnabled, AXIsProcessTrusted() else {
+            eventTapController.stop()
+            return
+        }
+
+        eventTapController.retryIfNeeded()
+        if eventTapController.state == .stopped {
+            eventTapController.start()
+        }
+    }
+
+    private func applyPinnedDock(after delay: TimeInterval) {
+        guard preferences.isProtectionEnabled else {
+            return
+        }
+
+        syncEventTapWithProtection()
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+            self?.edgeController.nudgePinnedDock()
+        }
+    }
+
+    private func showOnboardingIfNeeded() {
+        guard !preferences.hasCompletedOnboarding else {
+            return
+        }
+        showOnboarding(markAsFirstRun: true)
+    }
+
+    private func showOnboarding(markAsFirstRun: Bool) {
+        if onboardingWindowController == nil {
+            onboardingWindowController = OnboardingWindowController(
+                openSecurity: { [weak self] in self?.openSecuritySettings() },
+                openAccessibility: { [weak self] in self?.openAccessibilitySettings() },
+                finish: { [weak self] in
+                    self?.preferences.hasCompletedOnboarding = true
+                    self?.syncEventTapWithProtection()
+                    self?.rebuildMenu()
+                }
+            )
+        }
+
+        if !markAsFirstRun {
+            preferences.hasCompletedOnboarding = true
+        }
+        onboardingWindowController?.showWindow(nil)
     }
 }

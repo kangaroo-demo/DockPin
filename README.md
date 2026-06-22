@@ -16,6 +16,7 @@ It is built for multi-display setups where the Dock keeps moving to the wrong mo
 - Uses a soft pointer gate near the chosen display edge so the Dock stays on the intended display while normal cross-display movement remains possible.
 - Lets you tune protected width and pass-through delay.
 - Supports Launch at Login.
+- Includes a first-run setup guide for Gatekeeper and Accessibility permission.
 - Supports English and Simplified Chinese UI.
 
 ## What It Does Not Do
@@ -51,10 +52,14 @@ Click `DockPin` in the menu bar.
 
 - `Anchor Display`: choose the display that should own the Dock behavior.
 - `Dock Edge`: choose bottom, left, or right.
+- Changing `Dock Edge` also changes the macOS Dock position.
 - `Protected Width`: choose how much of that edge DockPin protects.
 - `Pass-through Delay`: choose how long DockPin waits before letting the pointer pass through to another display.
 - `Launch at Login`: start DockPin automatically after login.
+- `Apply Pin Now`: immediately nudges the Dock toward the selected display and edge.
 - Hold `Option` while crossing the protected edge to bypass the gate immediately.
+
+Turning `Enable Protection` off stops DockPin's event tap and nudges the Dock back to the system's default outer display edge.
 
 ## Recommended Settings
 
@@ -93,8 +98,8 @@ swift run DockPin --list-displays
 Push a version tag to create a GitHub Release automatically:
 
 ```sh
-git tag -a v0.1.1 -m "DockPin 0.1.1"
-git push origin v0.1.1
+git tag -a v0.1.2 -m "DockPin 0.1.2"
+git push origin v0.1.2
 ```
 
 The release workflow builds `dist/DockPin.zip` on macOS and uploads it to the release. It also supports Developer ID signing and notarization when Apple Developer secrets are configured. See [Signing and Notarization](docs/SIGNING_AND_NOTARIZATION.md).

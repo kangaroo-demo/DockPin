@@ -24,6 +24,10 @@ final class DockEdgeController {
         anchor
     }
 
+    var allDisplays: [DisplayInfo] {
+        displayManager.displays()
+    }
+
     func refreshAnchor(force: Bool = false) {
         if !force && Date().timeIntervalSince(lastRefresh) < refreshInterval {
             return
@@ -34,6 +38,27 @@ final class DockEdgeController {
             uuid: preferences.selectedDisplayUUID,
             name: preferences.selectedDisplayName
         )
+    }
+
+    func resetGate() {
+        gateStartedAt = nil
+        bypassUntil = .distantPast
+    }
+
+    func nudgePinnedDock(restoreCursor: Bool = true) {
+        refreshAnchor(force: true)
+        guard let anchor else {
+            return
+        }
+        nudgeDock(to: anchor, edge: preferences.dockEdge, restoreCursor: restoreCursor)
+    }
+
+    func nudgeSystemDefaultDock(restoreCursor: Bool = true) {
+        let edge = DockSystemController.currentEdge()
+        guard let display = defaultDisplay(for: edge) else {
+            return
+        }
+        nudgeDock(to: display, edge: edge, restoreCursor: restoreCursor)
     }
 
     func handle(event: CGEvent) -> CGEvent {
@@ -116,5 +141,66 @@ final class DockEdgeController {
         case .right:
             return CGPoint(x: bounds.maxX - clampInset, y: point.y)
         }
+    }
+
+    private func defaultDisplay(for edge: DockEdge) -> DisplayInfo? {
+        let displays = displayManager.displays()
+        switch edge {
+        case .bottom:
+            return displays.max { $0.bounds.maxY < $1.bounds.maxY }
+        case .left:
+            return displays.min { $0.bounds.minX < $1.bounds.minX }
+        case .right:
+            return displays.max { $0.bounds.maxX < $1.bounds.maxX }
+        }
+    }
+
+    private func nudgeDock(to display: DisplayInfo, edge: DockEdge, restoreCursor: Bool) {
+        let originalLocation = CGEvent(source: nil)?.location
+        let first = pointInsideEdge(bounds: display.bounds, edge: edge)
+        let second = pointBeyondEdge(bounds: display.bounds, edge: edge)
+
+        postMouseMove(to: first)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) { [weak self] in
+            self?.postMouseMove(to: second)
+            guard restoreCursor, let originalLocation else {
+                return
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
+                self?.postMouseMove(to: originalLocation)
+            }
+        }
+    }
+
+    private func pointInsideEdge(bounds: CGRect, edge: DockEdge) -> CGPoint {
+        switch edge {
+        case .bottom:
+            return CGPoint(x: bounds.midX, y: bounds.maxY - 8)
+        case .left:
+            return CGPoint(x: bounds.minX + 8, y: bounds.midY)
+        case .right:
+            return CGPoint(x: bounds.maxX - 8, y: bounds.midY)
+        }
+    }
+
+    private func pointBeyondEdge(bounds: CGRect, edge: DockEdge) -> CGPoint {
+        switch edge {
+        case .bottom:
+            return CGPoint(x: bounds.midX, y: bounds.maxY + 48)
+        case .left:
+            return CGPoint(x: bounds.minX - 48, y: bounds.midY)
+        case .right:
+            return CGPoint(x: bounds.maxX + 48, y: bounds.midY)
+        }
+    }
+
+    private func postMouseMove(to point: CGPoint) {
+        CGWarpMouseCursorPosition(point)
+        CGEvent(
+            mouseEventSource: nil,
+            mouseType: .mouseMoved,
+            mouseCursorPosition: point,
+            mouseButton: .left
+        )?.post(tap: .cghidEventTap)
     }
 }
