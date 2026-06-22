@@ -12,6 +12,8 @@ It is built for multiple-display setups where the Dock keeps moving to the wrong
 
 [Download DockPin.zip](https://github.com/kangaroo-demo/DockPin/releases/latest/download/DockPin.zip) · [All Releases](https://github.com/kangaroo-demo/DockPin/releases)
 
+![DockPin demo](docs/images/dockpin-demo.gif)
+
 [简体中文文档](README.zh-CN.md)
 
 ## What It Does
