@@ -1,6 +1,6 @@
 # DockPin
 
-DockPin is a free, open-source macOS menu bar utility that helps keep Dock edge behavior pinned to a display you choose.
+DockPin is a free, open-source macOS menu bar utility that helps keep Dock edge behavior on a display you choose while the app is running.
 
 It is built for multi-display setups where the Dock keeps moving to the wrong monitor, especially vertical layouts where one display sits above another.
 
@@ -14,7 +14,8 @@ It is built for multi-display setups where the Dock keeps moving to the wrong mo
 - Lets you choose the target display.
 - Supports bottom, left, and right Dock edges.
 - Uses a soft pointer gate near the chosen display edge so the Dock stays on the intended display while normal cross-display movement remains possible.
-- Lets you tune protected width and pass-through delay.
+- Restores the Dock to the system default outer display edge when you quit DockPin.
+- Lets you tune edge range and pass-through delay.
 - Supports Launch at Login.
 - Includes a first-run setup guide for Gatekeeper and Accessibility permission.
 - Supports English and Simplified Chinese UI.
@@ -50,23 +51,23 @@ You can also build DockPin from source to avoid downloading a quarantined app bu
 
 Click `DockPin` in the menu bar.
 
-- `Anchor Display`: choose the display that should own the Dock behavior.
+- `Target Display`: choose the display that should own the Dock behavior while DockPin is running.
 - `Dock Edge`: choose bottom, left, or right.
 - Changing `Dock Edge` also changes the macOS Dock position.
-- `Protected Width`: choose how much of that edge DockPin protects.
+- `Edge Range`: choose how much of that edge DockPin watches.
 - `Pass-through Delay`: choose how long DockPin waits before letting the pointer pass through to another display.
 - `Launch at Login`: start DockPin automatically after login.
-- Hold `Option` while crossing the protected edge to bypass the gate immediately.
+- Hold `Option` while crossing the watched edge to bypass the gate immediately.
 
-Turning `Enable Protection` off stops DockPin's event tap and nudges the Dock back to the system's default outer display edge.
+Opening DockPin applies the selected display behavior automatically. Quitting DockPin stops the event tap and nudges the Dock back to the system's default outer display edge.
 
 ## Recommended Settings
 
 For a top external display with a built-in display below it:
 
-- Anchor Display: external display
+- Target Display: external display
 - Dock Edge: Bottom
-- Protected Width: 40%
+- Edge Range: 40%
 - Pass-through Delay: 0.20s
 
 ## Build From Source
@@ -97,8 +98,8 @@ swift run DockPin --list-displays
 Push a version tag to create a GitHub Release automatically:
 
 ```sh
-git tag -a v0.1.6 -m "DockPin 0.1.6"
-git push origin v0.1.6
+git tag -a v0.1.7 -m "DockPin 0.1.7"
+git push origin v0.1.7
 ```
 
 The release workflow builds `dist/DockPin.zip` on macOS and uploads it to the release. It also supports Developer ID signing and notarization when Apple Developer secrets are configured. See [Signing and Notarization](docs/SIGNING_AND_NOTARIZATION.md).
@@ -117,13 +118,13 @@ Enable DockPin in `System Settings -> Privacy & Security -> Accessibility`, then
 
 ### The Dock still moves to the wrong display
 
-Try increasing `Protected Width` or `Pass-through Delay`. Also confirm the selected `Dock Edge` matches your macOS Dock position.
+Try increasing `Edge Range` or `Pass-through Delay`. Also confirm the selected `Dock Edge` matches your macOS Dock position.
 
 For stacked layouts, DockPin activates the nearest exposed part of the target display edge. If another display completely covers the selected edge, macOS may not expose a public way for DockPin to force that edge reliably.
 
 ### I cannot move to the other display
 
-Lower `Protected Width`, lower `Pass-through Delay`, cross through an unprotected edge area, or hold `Option` while crossing.
+Lower `Edge Range`, lower `Pass-through Delay`, cross through an unwatched edge area, or hold `Option` while crossing.
 
 ## License
 

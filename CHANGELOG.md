@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.7
+
+- Removed the Enable Protection menu item; DockPin now applies automatically while the app is running.
+- Quit now restores the Dock to the system default outer display edge before the app exits.
+- Renamed user-facing anchor/protection wording to Target Display and Edge Range.
+
 ## 0.1.6
 
 - Restored the more reliable Dock activation timing for enabling and disabling protection.

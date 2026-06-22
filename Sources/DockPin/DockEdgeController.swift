@@ -109,12 +109,29 @@ final class DockEdgeController {
         nudgeDock(to: display, edge: edge, restoreCursor: restoreCursor)
     }
 
-    func handle(event: CGEvent) -> CGEvent {
-        guard preferences.isProtectionEnabled else {
-            gateStartedAt = nil
-            return event
+    func restoreSystemDefaultDockBeforeExit() {
+        refreshAnchor(force: true)
+        resetGate()
+
+        let edge = DockSystemController.currentEdge()
+        guard let display = defaultDisplay(for: edge) else {
+            return
         }
 
+        let originalLocation = CGEvent(source: nil)?.location
+        for index in 0..<dockActivationPulseCount {
+            let point = pointInsideEdge(display: display, edge: edge, offset: index, reference: originalLocation)
+            postMouseMove(to: point)
+            Thread.sleep(forTimeInterval: dockActivationPulseInterval)
+        }
+
+        if let originalLocation {
+            Thread.sleep(forTimeInterval: 0.18)
+            postMouseMove(to: originalLocation)
+        }
+    }
+
+    func handle(event: CGEvent) -> CGEvent {
         if anchor == nil {
             refreshAnchor(force: true)
         }

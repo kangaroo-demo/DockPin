@@ -4,19 +4,17 @@
 "edge.left" = "左侧";
 "edge.right" = "右侧";
 
-"status.protection_on" = "保护：开启";
-"status.protection_off" = "保护：关闭";
+"status.running" = "运行中";
 "status.permission_needed" = "需要辅助功能权限";
 "status.event_tap_ok" = "事件监听正常";
 "status.event_tap_unavailable" = "事件监听不可用";
 "status.event_tap_stopped" = "事件监听已停止";
 
-"menu.anchor_format" = "锚定：%@";
-"menu.anchor_missing" = "锚定：未找到显示器";
-"menu.enable_protection" = "开启保护";
-"menu.display" = "锚定显示器";
+"menu.anchor_format" = "目标：%@";
+"menu.anchor_missing" = "目标显示器未找到";
+"menu.display" = "目标显示器";
 "menu.edge" = "Dock 边缘";
-"menu.protected_width" = "保护宽度";
+"menu.protected_width" = "边缘范围";
 "menu.pass_through_delay" = "穿透延迟";
 "menu.percent_format" = "%d%%";
 "menu.seconds_format" = "%.2f 秒";
@@ -29,7 +27,7 @@
 "menu.about" = "关于 DockPin";
 "menu.quit" = "退出";
 
-"about.body" = "DockPin 是一个免费开源的 macOS 菜单栏小工具，用来帮助 Dock 行为固定在你选择的显示器上。它只使用辅助功能权限来观察鼠标移动，并在你选择的 Dock 边缘附近进行轻量软拦截。";
+"about.body" = "DockPin 是一个免费开源的 macOS 菜单栏小工具。运行时它会帮助 Dock 停留在你选择的显示器上；退出时会还原系统默认行为。它只使用辅助功能权限来观察鼠标移动，并在你选择的 Dock 边缘附近进行轻量软拦截。";
 
 "onboarding.title" = "DockPin 设置";
 "onboarding.heading" = "设置 DockPin";

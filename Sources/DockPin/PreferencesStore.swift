@@ -2,7 +2,6 @@ import Foundation
 
 final class PreferencesStore {
     private enum Key {
-        static let isProtectionEnabled = "isProtectionEnabled"
         static let selectedDisplayUUID = "selectedDisplayUUID"
         static let selectedDisplayName = "selectedDisplayName"
         static let dockEdge = "dockEdge"
@@ -13,15 +12,6 @@ final class PreferencesStore {
     }
 
     private let defaults = UserDefaults.standard
-
-    var isProtectionEnabled: Bool {
-        get {
-            defaults.object(forKey: Key.isProtectionEnabled) as? Bool ?? true
-        }
-        set {
-            defaults.set(newValue, forKey: Key.isProtectionEnabled)
-        }
-    }
 
     var selectedDisplayUUID: String? {
         get {

@@ -19,11 +19,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let menu = NSMenu()
     private var refreshTimer: Timer?
     private var onboardingWindowController: OnboardingWindowController?
+    private var isRestoringBeforeQuit = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
         setupStatusItem()
-        syncEventTapWithProtection()
+        syncEventTap()
         rebuildMenu()
         showOnboardingIfNeeded()
         applyPinnedDock(after: 0.35, restoreCursor: true)
@@ -43,6 +44,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             repeats: true
         )
         RunLoop.main.add(refreshTimer!, forMode: .common)
+    }
+
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        guard !isRestoringBeforeQuit else {
+            return .terminateNow
+        }
+
+        isRestoringBeforeQuit = true
+        refreshTimer?.invalidate()
+        eventTapController.stop()
+
+        DispatchQueue.main.async { [weak self] in
+            self?.edgeController.restoreSystemDefaultDockBeforeExit()
+            NSApp.reply(toApplicationShouldTerminate: true)
+        }
+
+        return .terminateLater
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -69,7 +87,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func menuWillOpen(_ menu: NSMenu) {
         edgeController.refreshAnchor(force: true)
-        syncEventTapWithProtection()
+        syncEventTap()
         rebuildMenu()
     }
 
@@ -91,7 +109,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
 
         menu.addItem(.separator())
-        menu.addItem(toggleProtectionItem())
         menu.addItem(displayPickerItem())
         menu.addItem(edgePickerItem())
         menu.addItem(widthPickerItem())
@@ -113,9 +130,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     private func statusLine() -> String {
-        let protection = preferences.isProtectionEnabled ? L10n.t("status.protection_on") : L10n.t("status.protection_off")
         let eventTap = eventTapStatusTitle()
-        return "\(protection) - \(eventTap)"
+        return "\(L10n.t("status.running")) - \(eventTap)"
     }
 
     private func eventTapStatusTitle() -> String {
@@ -131,16 +147,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         case .stopped:
             return L10n.t("status.event_tap_stopped")
         }
-    }
-
-    private func toggleProtectionItem() -> NSMenuItem {
-        let item = NSMenuItem(
-            title: L10n.t("menu.enable_protection"),
-            action: #selector(toggleProtection),
-            keyEquivalent: ""
-        )
-        item.state = preferences.isProtectionEnabled ? .on : .off
-        return item
     }
 
     private func displayPickerItem() -> NSMenuItem {
@@ -254,18 +260,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         return item
     }
 
-    @objc private func toggleProtection() {
-        preferences.isProtectionEnabled.toggle()
-        syncEventTapWithProtection()
-        if preferences.isProtectionEnabled {
-            applyPinnedDock(after: 0.12, restoreCursor: false)
-        } else {
-            edgeController.resetGate()
-            edgeController.nudgeSystemDefaultDock()
-        }
-        rebuildMenu()
-    }
-
     @objc private func selectDisplay(_ sender: NSMenuItem) {
         guard
             let payload = sender.representedObject as? [String: String],
@@ -291,7 +285,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         preferences.dockEdge = edge
         DockSystemController.setDockEdge(edge)
-        syncEventTapWithProtection()
+        syncEventTap()
         applyPinnedDock(after: 0.70, restoreCursor: false)
         rebuildMenu()
     }
@@ -323,7 +317,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     @objc private func refreshDisplays() {
         edgeController.refreshAnchor(force: true)
-        syncEventTapWithProtection()
+        syncEventTap()
         rebuildMenu()
     }
 
@@ -357,7 +351,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func periodicRefresh() {
-        syncEventTapWithProtection()
+        syncEventTap()
         edgeController.refreshAnchor()
     }
 
@@ -370,8 +364,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         alert.runModal()
     }
 
-    private func syncEventTapWithProtection() {
-        guard preferences.isProtectionEnabled, AXIsProcessTrusted() else {
+    private func syncEventTap() {
+        guard AXIsProcessTrusted() else {
             eventTapController.stop()
             return
         }
@@ -383,11 +377,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     private func applyPinnedDock(after delay: TimeInterval, restoreCursor: Bool) {
-        guard preferences.isProtectionEnabled else {
-            return
-        }
-
-        syncEventTapWithProtection()
+        syncEventTap()
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
             self?.edgeController.nudgePinnedDock(restoreCursor: restoreCursor)
         }
@@ -407,7 +397,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 openAccessibility: { [weak self] in self?.openAccessibilitySettings() },
                 finish: { [weak self] in
                     self?.preferences.hasCompletedOnboarding = true
-                    self?.syncEventTapWithProtection()
+                    self?.syncEventTap()
                     self?.rebuildMenu()
                 }
             )

@@ -4,19 +4,17 @@
 "edge.left" = "Left";
 "edge.right" = "Right";
 
-"status.protection_on" = "Protection: On";
-"status.protection_off" = "Protection: Off";
+"status.running" = "Running";
 "status.permission_needed" = "Accessibility Needed";
 "status.event_tap_ok" = "Event Tap OK";
 "status.event_tap_unavailable" = "Event Tap Unavailable";
 "status.event_tap_stopped" = "Event Tap Stopped";
 
-"menu.anchor_format" = "Anchor: %@";
-"menu.anchor_missing" = "Anchor: not found";
-"menu.enable_protection" = "Enable Protection";
-"menu.display" = "Anchor Display";
+"menu.anchor_format" = "Target: %@";
+"menu.anchor_missing" = "Target display not found";
+"menu.display" = "Target Display";
 "menu.edge" = "Dock Edge";
-"menu.protected_width" = "Protected Width";
+"menu.protected_width" = "Edge Range";
 "menu.pass_through_delay" = "Pass-through Delay";
 "menu.percent_format" = "%d%%";
 "menu.seconds_format" = "%.2fs";
@@ -29,7 +27,7 @@
 "menu.about" = "About DockPin";
 "menu.quit" = "Quit";
 
-"about.body" = "DockPin is a free, open-source macOS menu bar utility that helps keep the Dock behavior pinned to a selected display. It uses Accessibility permission only to observe and gently clamp pointer movement near your chosen Dock edge.";
+"about.body" = "DockPin is a free, open-source macOS menu bar utility that helps keep the Dock behavior on a selected display while it is running. It uses Accessibility permission only to observe and gently clamp pointer movement near your chosen Dock edge.";
 
 "onboarding.title" = "DockPin Setup";
 "onboarding.heading" = "Set up DockPin";
