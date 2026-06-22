@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.8
+
+- Improved the first-run setup guide with clearer Gatekeeper, Accessibility, and target display steps.
+- Added English and Simplified Chinese menu screenshots to the README files.
+
 ## 0.1.7
 
 - Removed the Enable Protection menu item; DockPin now applies automatically while the app is running.

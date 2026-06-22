@@ -51,6 +51,8 @@ DockPin 的原理是使用 Quartz event tap 和辅助功能权限，在你选择
 
 点击菜单栏里的 `DockPin`。
 
+<img src="docs/images/dockpin-menu-zh.png" alt="DockPin 菜单" width="360">
+
 - `目标显示器`：选择 DockPin 运行时希望 Dock 优先停留的显示器。
 - `Dock 边缘`：选择底部、左侧或右侧。
 - 修改 `Dock 边缘` 也会同步修改 macOS 自己的 Dock 位置。
@@ -98,8 +100,8 @@ swift run DockPin --list-displays
 推送版本 tag 后会自动创建 GitHub Release：
 
 ```sh
-git tag -a v0.1.7 -m "DockPin 0.1.7"
-git push origin v0.1.7
+git tag -a v0.1.8 -m "DockPin 0.1.8"
+git push origin v0.1.8
 ```
 
 Release workflow 会在 macOS 上构建 `dist/DockPin.zip`，并上传到对应的 Release。如果配置了 Apple Developer secrets，也支持 Developer ID 签名和公证。见[签名与公证说明](docs/SIGNING_AND_NOTARIZATION.zh-CN.md)。

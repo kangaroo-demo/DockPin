@@ -31,15 +31,17 @@
 
 "onboarding.title" = "DockPin 设置";
 "onboarding.heading" = "设置 DockPin";
-"onboarding.body" = "DockPin 需要几个 macOS 权限和设置，才能更稳定地引导 Dock 留在目标显示器。";
+"onboarding.body" = "DockPin 打开后会自动生效。首次使用只需要完成下面几步，然后选择希望 Dock 停留的显示器。";
 "onboarding.step_gatekeeper_title" = "如果 macOS 拦截应用";
-"onboarding.step_gatekeeper_body" = "社区构建可能会出现无法验证提示。先点“完成”，再进入“隐私与安全性”，为 DockPin 选择“仍要打开”。";
+"onboarding.step_gatekeeper_body" = "社区构建可能会出现无法验证提示。先点“完成”，打开“隐私与安全性”，为 DockPin 选择“仍要打开”，再重新打开 DockPin。";
 "onboarding.open_security" = "打开隐私与安全性";
-"onboarding.step_accessibility_title" = "启用辅助功能";
-"onboarding.step_accessibility_body" = "DockPin 只使用辅助功能权限观察鼠标移动，并在目标边缘应用软拦截。";
+"onboarding.step_accessibility_title" = "开启辅助功能权限";
+"onboarding.step_accessibility_body" = "在辅助功能里启用 DockPin。这个权限只用于观察鼠标移动，并帮助 Dock 留在目标边缘。";
 "onboarding.open_accessibility" = "打开辅助功能";
-"onboarding.recheck" = "重新检查";
-"onboarding.done" = "完成";
+"onboarding.step_target_title" = "选择目标显示器";
+"onboarding.step_target_body" = "点击菜单栏图标，选择“目标显示器”、“Dock 边缘”、“边缘范围”和“穿透延迟”。DockPin 运行时自动生效，退出时还原系统默认行为。";
+"onboarding.recheck" = "检查权限";
+"onboarding.done" = "完成设置";
 "onboarding.accessibility_granted" = "辅助功能权限已启用。";
 "onboarding.accessibility_missing" = "辅助功能权限尚未启用。";
 

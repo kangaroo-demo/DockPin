@@ -51,6 +51,8 @@ You can also build DockPin from source to avoid downloading a quarantined app bu
 
 Click `DockPin` in the menu bar.
 
+<img src="docs/images/dockpin-menu-en.png" alt="DockPin menu" width="360">
+
 - `Target Display`: choose the display that should own the Dock behavior while DockPin is running.
 - `Dock Edge`: choose bottom, left, or right.
 - Changing `Dock Edge` also changes the macOS Dock position.
@@ -98,8 +100,8 @@ swift run DockPin --list-displays
 Push a version tag to create a GitHub Release automatically:
 
 ```sh
-git tag -a v0.1.7 -m "DockPin 0.1.7"
-git push origin v0.1.7
+git tag -a v0.1.8 -m "DockPin 0.1.8"
+git push origin v0.1.8
 ```
 
 The release workflow builds `dist/DockPin.zip` on macOS and uploads it to the release. It also supports Developer ID signing and notarization when Apple Developer secrets are configured. See [Signing and Notarization](docs/SIGNING_AND_NOTARIZATION.md).

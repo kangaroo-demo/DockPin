@@ -31,15 +31,17 @@
 
 "onboarding.title" = "DockPin Setup";
 "onboarding.heading" = "Set up DockPin";
-"onboarding.body" = "DockPin needs a couple of macOS permissions and settings before it can guide the Dock reliably.";
-"onboarding.step_gatekeeper_title" = "If macOS blocks the app";
-"onboarding.step_gatekeeper_body" = "For community builds, click Done in the warning, then open Privacy & Security and choose Open Anyway for DockPin.";
+"onboarding.body" = "DockPin starts working as soon as it opens. Finish these setup steps once, then choose the display where the Dock should stay.";
+"onboarding.step_gatekeeper_title" = "Allow the app if macOS blocks it";
+"onboarding.step_gatekeeper_body" = "For community builds, click Done in the warning, open Privacy & Security, choose Open Anyway for DockPin, then open DockPin again.";
 "onboarding.open_security" = "Open Privacy & Security";
-"onboarding.step_accessibility_title" = "Enable Accessibility";
-"onboarding.step_accessibility_body" = "DockPin uses Accessibility permission only to observe pointer movement and apply the soft edge gate.";
+"onboarding.step_accessibility_title" = "Turn on Accessibility permission";
+"onboarding.step_accessibility_body" = "Enable DockPin in Accessibility. This permission is only used to watch pointer movement and keep the Dock on the target edge.";
 "onboarding.open_accessibility" = "Open Accessibility";
-"onboarding.recheck" = "Recheck";
-"onboarding.done" = "Done";
+"onboarding.step_target_title" = "Choose the target display";
+"onboarding.step_target_body" = "Use the menu bar icon to choose Target Display, Dock Edge, Edge Range, and Pass-through Delay. DockPin applies automatically while running and restores the system default when you quit.";
+"onboarding.recheck" = "Check Permission";
+"onboarding.done" = "Finish Setup";
 "onboarding.accessibility_granted" = "Accessibility permission is enabled.";
 "onboarding.accessibility_missing" = "Accessibility permission is not enabled yet.";
 

@@ -13,7 +13,7 @@ final class OnboardingWindowController: NSWindowController {
         self.finish = finish
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 560, height: 430),
+            contentRect: NSRect(x: 0, y: 0, width: 580, height: 500),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
@@ -43,7 +43,7 @@ final class OnboardingWindowController: NSWindowController {
         let stack = NSStackView()
         stack.orientation = .vertical
         stack.alignment = .leading
-        stack.spacing = 18
+        stack.spacing = 16
         stack.translatesAutoresizingMaskIntoConstraints = false
         root.addSubview(stack)
 
@@ -55,9 +55,29 @@ final class OnboardingWindowController: NSWindowController {
         let body = wrappingLabel(L10n.t("onboarding.body"))
         stack.addArrangedSubview(body)
 
-        stack.addArrangedSubview(stepView(number: "1", title: L10n.t("onboarding.step_gatekeeper_title"), body: L10n.t("onboarding.step_gatekeeper_body"), buttonTitle: L10n.t("onboarding.open_security"), action: #selector(openSecuritySettings)))
+        stack.addArrangedSubview(stepView(
+            number: "1",
+            title: L10n.t("onboarding.step_gatekeeper_title"),
+            body: L10n.t("onboarding.step_gatekeeper_body"),
+            buttonTitle: L10n.t("onboarding.open_security"),
+            action: #selector(openSecuritySettings)
+        ))
 
-        stack.addArrangedSubview(stepView(number: "2", title: L10n.t("onboarding.step_accessibility_title"), body: L10n.t("onboarding.step_accessibility_body"), buttonTitle: L10n.t("onboarding.open_accessibility"), action: #selector(openAccessibilitySettings)))
+        stack.addArrangedSubview(stepView(
+            number: "2",
+            title: L10n.t("onboarding.step_accessibility_title"),
+            body: L10n.t("onboarding.step_accessibility_body"),
+            buttonTitle: L10n.t("onboarding.open_accessibility"),
+            action: #selector(openAccessibilitySettings)
+        ))
+
+        stack.addArrangedSubview(stepView(
+            number: "3",
+            title: L10n.t("onboarding.step_target_title"),
+            body: L10n.t("onboarding.step_target_body"),
+            buttonTitle: nil,
+            action: nil
+        ))
 
         statusLabel.font = .systemFont(ofSize: 12, weight: .medium)
         statusLabel.textColor = .secondaryLabelColor
@@ -91,7 +111,7 @@ final class OnboardingWindowController: NSWindowController {
         return root
     }
 
-    private func stepView(number: String, title: String, body: String, buttonTitle: String, action: Selector) -> NSView {
+    private func stepView(number: String, title: String, body: String, buttonTitle: String?, action: Selector?) -> NSView {
         let row = NSStackView()
         row.orientation = .horizontal
         row.alignment = .top
@@ -120,8 +140,10 @@ final class OnboardingWindowController: NSWindowController {
         textStack.addArrangedSubview(titleLabel)
         textStack.addArrangedSubview(wrappingLabel(body))
 
-        let button = NSButton(title: buttonTitle, target: self, action: action)
-        textStack.addArrangedSubview(button)
+        if let buttonTitle, let action {
+            let button = NSButton(title: buttonTitle, target: self, action: action)
+            textStack.addArrangedSubview(button)
+        }
 
         row.addArrangedSubview(badge)
         row.addArrangedSubview(textStack)
