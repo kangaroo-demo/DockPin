@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+- Added DockPin app icon and menu bar icon.
+- Changed protection toggle to a stable checkbox item so the checkmark means protection is enabled.
+- Fixed disabled Quit menu item.
+
 ## 0.1.0
 
 - Initial public MVP.

@@ -6,3 +6,4 @@ dist/
 DerivedData/
 *.zip
 *.dSYM
+Resources/*.iconset/

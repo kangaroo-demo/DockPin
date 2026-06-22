@@ -13,8 +13,7 @@
 
 "menu.anchor_format" = "Anchor: %@";
 "menu.anchor_missing" = "Anchor: not found";
-"menu.turn_off" = "Turn Off Protection";
-"menu.turn_on" = "Turn On Protection";
+"menu.enable_protection" = "Enable Protection";
 "menu.display" = "Anchor Display";
 "menu.edge" = "Dock Edge";
 "menu.protected_width" = "Protected Width";

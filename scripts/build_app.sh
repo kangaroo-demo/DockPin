@@ -22,6 +22,7 @@ cp "Info.plist" "$CONTENTS_DIR/Info.plist"
 
 if [[ -d Resources ]]; then
   cp -R Resources/. "$RESOURCES_DIR/"
+  find "$RESOURCES_DIR" -name "*.iconset" -type d -prune -exec rm -rf {} +
 fi
 
 xattr -cr "$APP_DIR" || true

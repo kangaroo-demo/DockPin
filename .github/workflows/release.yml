@@ -18,13 +18,17 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Import Developer ID certificate
-        if: ${{ env.HAS_CERTIFICATE == 'true' }}
         env:
           CERTIFICATE_BASE64: ${{ secrets.APPLE_DEVELOPER_ID_CERTIFICATE_BASE64 }}
           CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_CERTIFICATE_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.APPLE_KEYCHAIN_PASSWORD }}
         run: |
           set -euo pipefail
+          if [[ -z "$CERTIFICATE_BASE64" ]]; then
+            echo "No Developer ID certificate configured; building an ad-hoc signed community release."
+            exit 0
+          fi
+
           KEYCHAIN_PASSWORD="${KEYCHAIN_PASSWORD:-dockpin-build-keychain}"
           CERTIFICATE_PATH="$RUNNER_TEMP/developer-id.p12"
           KEYCHAIN_PATH="$RUNNER_TEMP/dockpin-signing.keychain-db"
@@ -60,6 +64,3 @@ jobs:
         with:
           files: dist/DockPin.zip
           generate_release_notes: true
-
-env:
-  HAS_CERTIFICATE: ${{ secrets.APPLE_DEVELOPER_ID_CERTIFICATE_BASE64 != '' }}

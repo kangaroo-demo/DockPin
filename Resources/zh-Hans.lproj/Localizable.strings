@@ -13,8 +13,7 @@
 
 "menu.anchor_format" = "锚定：%@";
 "menu.anchor_missing" = "锚定：未找到显示器";
-"menu.turn_off" = "关闭保护";
-"menu.turn_on" = "开启保护";
+"menu.enable_protection" = "开启保护";
 "menu.display" = "锚定显示器";
 "menu.edge" = "Dock 边缘";
 "menu.protected_width" = "保护宽度";

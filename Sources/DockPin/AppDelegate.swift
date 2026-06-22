@@ -49,9 +49,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     private func setupStatusItem() {
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        statusItem?.button?.title = "DockPin"
-        statusItem?.button?.toolTip = "DockPin"
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        if let button = statusItem?.button {
+            if let image = NSImage(named: "StatusIcon") {
+                image.isTemplate = true
+                image.size = NSSize(width: 18, height: 18)
+                button.image = image
+                button.imagePosition = .imageOnly
+            } else {
+                button.title = "DockPin"
+            }
+            button.toolTip = "DockPin"
+        }
         menu.delegate = self
         statusItem?.menu = menu
     }
@@ -102,7 +111,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: L10n.t("menu.about"), action: #selector(showAbout), keyEquivalent: ""))
-        menu.addItem(NSMenuItem(title: L10n.t("menu.quit"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+        menu.addItem(quitItem())
 
         for item in menu.items where item.action != nil && item.target == nil {
             item.target = self
@@ -132,7 +141,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private func toggleProtectionItem() -> NSMenuItem {
         let item = NSMenuItem(
-            title: preferences.isProtectionEnabled ? L10n.t("menu.turn_off") : L10n.t("menu.turn_on"),
+            title: L10n.t("menu.enable_protection"),
             action: #selector(toggleProtection),
             keyEquivalent: ""
         )
@@ -238,6 +247,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let item = NSMenuItem(title: title, action: #selector(toggleLaunchAtLogin), keyEquivalent: "")
         item.state = state
         item.isEnabled = launchAtLogin.status != .unsupported
+        return item
+    }
+
+    private func quitItem() -> NSMenuItem {
+        let item = NSMenuItem(
+            title: L10n.t("menu.quit"),
+            action: #selector(NSApplication.terminate(_:)),
+            keyEquivalent: "q"
+        )
+        item.target = NSApp
         return item
     }
 
