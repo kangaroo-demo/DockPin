@@ -51,7 +51,7 @@ You can also build DockPin from source to avoid downloading a quarantined app bu
 
 Click `DockPin` in the menu bar.
 
-<img src="docs/images/dockpin-menu-en.png" alt="DockPin menu" width="360">
+<img src="docs/images/dockpin-menu-en.png" alt="DockPin menu" width="301">
 
 - `Target Display`: choose the display that should own the Dock behavior while DockPin is running.
 - `Dock Edge`: choose bottom, left, or right.

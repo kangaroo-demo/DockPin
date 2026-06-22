@@ -51,7 +51,7 @@ DockPin 的原理是使用 Quartz event tap 和辅助功能权限，在你选择
 
 点击菜单栏里的 `DockPin`。
 
-<img src="docs/images/dockpin-menu-zh.png" alt="DockPin 菜单" width="360">
+<img src="docs/images/dockpin-menu-zh.png" alt="DockPin 菜单" width="301">
 
 - `目标显示器`：选择 DockPin 运行时希望 Dock 优先停留的显示器。
 - `Dock 边缘`：选择底部、左侧或右侧。
