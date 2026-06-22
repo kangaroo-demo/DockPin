@@ -68,7 +68,7 @@ DockPin 的原理是使用 Quartz event tap 和辅助功能权限，在你选择
 - 锚定显示器：外接显示器
 - Dock 边缘：底部
 - 保护宽度：40%
-- 穿透延迟：0.45 秒
+- 穿透延迟：0.20 秒
 
 ## 从源码构建
 
@@ -98,8 +98,8 @@ swift run DockPin --list-displays
 推送版本 tag 后会自动创建 GitHub Release：
 
 ```sh
-git tag -a v0.1.4 -m "DockPin 0.1.4"
-git push origin v0.1.4
+git tag -a v0.1.5 -m "DockPin 0.1.5"
+git push origin v0.1.5
 ```
 
 Release workflow 会在 macOS 上构建 `dist/DockPin.zip`，并上传到对应的 Release。如果配置了 Apple Developer secrets，也支持 Developer ID 签名和公证。见[签名与公证说明](docs/SIGNING_AND_NOTARIZATION.zh-CN.md)。

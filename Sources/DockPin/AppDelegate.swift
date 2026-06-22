@@ -205,7 +205,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func delayPickerItem() -> NSMenuItem {
         let item = NSMenuItem(title: L10n.t("menu.pass_through_delay"), action: nil, keyEquivalent: "")
         let submenu = NSMenu()
-        let options: [Double] = [0.15, 0.30, 0.45, 0.65, 0.90]
+        let options: [Double] = [0.10, 0.20, 0.30, 0.45, 0.65, 0.90]
 
         for option in options {
             let title = L10n.t("menu.seconds_format", option)

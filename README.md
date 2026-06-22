@@ -68,7 +68,7 @@ For a top external display with a built-in display below it:
 - Anchor Display: external display
 - Dock Edge: Bottom
 - Protected Width: 40%
-- Pass-through Delay: 0.45s
+- Pass-through Delay: 0.20s
 
 ## Build From Source
 
@@ -98,8 +98,8 @@ swift run DockPin --list-displays
 Push a version tag to create a GitHub Release automatically:
 
 ```sh
-git tag -a v0.1.4 -m "DockPin 0.1.4"
-git push origin v0.1.4
+git tag -a v0.1.5 -m "DockPin 0.1.5"
+git push origin v0.1.5
 ```
 
 The release workflow builds `dist/DockPin.zip` on macOS and uploads it to the release. It also supports Developer ID signing and notarization when Apple Developer secrets are configured. See [Signing and Notarization](docs/SIGNING_AND_NOTARIZATION.md).

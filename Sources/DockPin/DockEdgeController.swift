@@ -37,6 +37,7 @@ final class DockEdgeController {
     private let preferences: PreferencesStore
 
     private var anchor: DisplayInfo?
+    private var displaySnapshot: [DisplayInfo] = []
     private var gateStartedAt: Date?
     private var bypassUntil = Date.distantPast
     private var lastRefresh = Date.distantPast
@@ -47,8 +48,8 @@ final class DockEdgeController {
     private let adjacencyTolerance: CGFloat = 4
     private let minimumActivationSpan: CGFloat = 24
     private let refreshInterval: TimeInterval = 1.0
-    private let dockActivationPulseCount = 14
-    private let dockActivationPulseInterval: TimeInterval = 0.055
+    private let dockActivationPulseCount = 8
+    private let dockActivationPulseInterval: TimeInterval = 0.035
 
     init(displayManager: DisplayManager, preferences: PreferencesStore) {
         self.displayManager = displayManager
@@ -61,7 +62,7 @@ final class DockEdgeController {
     }
 
     var allDisplays: [DisplayInfo] {
-        displayManager.displays()
+        displaySnapshot.isEmpty ? displayManager.displays() : displaySnapshot
     }
 
     func refreshAnchor(force: Bool = false) {
@@ -70,10 +71,20 @@ final class DockEdgeController {
         }
 
         lastRefresh = Date()
-        anchor = displayManager.selectedDisplay(
-            uuid: preferences.selectedDisplayUUID,
-            name: preferences.selectedDisplayName
-        )
+        let displays = displayManager.displays()
+        displaySnapshot = displays
+
+        if let selected = displays.first(where: {
+            DisplayMatcher.matches(
+                display: $0,
+                uuid: preferences.selectedDisplayUUID,
+                name: preferences.selectedDisplayName
+            )
+        }) {
+            anchor = selected
+        } else {
+            anchor = displays.first(where: \.isMain) ?? displays.first
+        }
     }
 
     func resetGate() {
@@ -103,7 +114,9 @@ final class DockEdgeController {
             return event
         }
 
-        refreshAnchor()
+        if anchor == nil {
+            refreshAnchor(force: true)
+        }
 
         guard let anchor else {
             return event
@@ -196,7 +209,7 @@ final class DockEdgeController {
     }
 
     private func defaultDisplay(for edge: DockEdge) -> DisplayInfo? {
-        let displays = displayManager.displays()
+        let displays = displaySnapshot.isEmpty ? displayManager.displays() : displaySnapshot
         switch edge {
         case .bottom:
             return displays.max { $0.bounds.maxY < $1.bounds.maxY }
@@ -225,7 +238,7 @@ final class DockEdgeController {
             return
         }
 
-        let restoreDelay = TimeInterval(dockActivationPulseCount) * dockActivationPulseInterval + 0.18
+        let restoreDelay = TimeInterval(dockActivationPulseCount) * dockActivationPulseInterval + 0.08
         DispatchQueue.main.asyncAfter(deadline: .now() + restoreDelay) { [weak self] in
             self?.postMouseMove(to: originalLocation)
         }
@@ -265,7 +278,7 @@ final class DockEdgeController {
 
     private func exposedSegments(of display: DisplayInfo, edge: DockEdge) -> [EdgeSegment] {
         let bounds = display.bounds
-        let otherBounds = displayManager.displays()
+        let otherBounds = (displaySnapshot.isEmpty ? displayManager.displays() : displaySnapshot)
             .filter { $0.id != display.id }
             .map(\.bounds)
 

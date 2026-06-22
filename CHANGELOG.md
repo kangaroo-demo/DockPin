@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.5
+
+- Improved pointer responsiveness by caching display topology instead of querying displays on every mouse event.
+- Shortened Dock activation nudges now that stacked layouts use exposed real edge segments.
+- Changed the default pass-through delay from 0.45s to 0.20s and added a 0.10s option.
+
 ## 0.1.4
 
 - Fixed pin activation for stacked displays where the target display edge is partly covered by another display.

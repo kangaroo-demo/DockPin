@@ -63,7 +63,7 @@ final class PreferencesStore {
     var gateHoldDuration: Double {
         get {
             let value = defaults.double(forKey: Key.gateHoldDuration)
-            return value > 0 ? value : 0.45
+            return value > 0 ? value : 0.20
         }
         set {
             defaults.set(min(max(newValue, 0.05), 2.0), forKey: Key.gateHoldDuration)
