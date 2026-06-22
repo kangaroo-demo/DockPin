@@ -26,7 +26,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         syncEventTapWithProtection()
         rebuildMenu()
         showOnboardingIfNeeded()
-        applyPinnedDock(after: 0.35)
+        applyPinnedDock(after: 0.35, restoreCursor: true)
 
         NotificationCenter.default.addObserver(
             self,
@@ -69,7 +69,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func menuWillOpen(_ menu: NSMenu) {
         edgeController.refreshAnchor(force: true)
-        eventTapController.retryIfNeeded()
+        syncEventTapWithProtection()
         rebuildMenu()
     }
 
@@ -259,7 +259,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         preferences.isProtectionEnabled.toggle()
         syncEventTapWithProtection()
         if preferences.isProtectionEnabled {
-            applyPinnedDock(after: 0.12)
+            applyPinnedDock(after: 0.12, restoreCursor: false)
         } else {
             edgeController.resetGate()
             edgeController.nudgeSystemDefaultDock()
@@ -278,7 +278,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         preferences.selectedDisplayUUID = payload["uuid"]?.isEmpty == false ? payload["uuid"] : nil
         preferences.selectedDisplayName = name
         edgeController.refreshAnchor(force: true)
-        applyPinnedDock(after: 0.08)
+        applyPinnedDock(after: 0.08, restoreCursor: false)
         rebuildMenu()
     }
 
@@ -293,7 +293,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         preferences.dockEdge = edge
         DockSystemController.setDockEdge(edge)
         syncEventTapWithProtection()
-        applyPinnedDock(after: 0.70)
+        applyPinnedDock(after: 0.70, restoreCursor: false)
         rebuildMenu()
     }
 
@@ -341,7 +341,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func applyPinnedDockFromMenu() {
-        applyPinnedDock(after: 0)
+        applyPinnedDock(after: 0, restoreCursor: false)
     }
 
     @objc private func showOnboardingFromMenu() {
@@ -387,14 +387,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
 
-    private func applyPinnedDock(after delay: TimeInterval) {
+    private func applyPinnedDock(after delay: TimeInterval, restoreCursor: Bool) {
         guard preferences.isProtectionEnabled else {
             return
         }
 
         syncEventTapWithProtection()
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
-            self?.edgeController.nudgePinnedDock()
+            self?.edgeController.nudgePinnedDock(restoreCursor: restoreCursor)
         }
     }
 

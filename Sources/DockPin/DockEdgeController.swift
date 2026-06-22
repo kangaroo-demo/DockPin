@@ -11,8 +11,10 @@ final class DockEdgeController {
     private var lastRefresh = Date.distantPast
 
     private let edgeBand: CGFloat = 72
-    private let clampInset: CGFloat = 2
+    private let clampInset: CGFloat = 1
     private let refreshInterval: TimeInterval = 1.0
+    private let dockActivationPulseCount = 14
+    private let dockActivationPulseInterval: TimeInterval = 0.055
 
     init(displayManager: DisplayManager, preferences: PreferencesStore) {
         self.displayManager = displayManager
@@ -157,40 +159,37 @@ final class DockEdgeController {
 
     private func nudgeDock(to display: DisplayInfo, edge: DockEdge, restoreCursor: Bool) {
         let originalLocation = CGEvent(source: nil)?.location
-        let first = pointInsideEdge(bounds: display.bounds, edge: edge)
-        let second = pointBeyondEdge(bounds: display.bounds, edge: edge)
+        gateStartedAt = nil
+        bypassUntil = .distantPast
 
-        postMouseMove(to: first)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) { [weak self] in
-            self?.postMouseMove(to: second)
-            guard restoreCursor, let originalLocation else {
-                return
+        for index in 0..<dockActivationPulseCount {
+            let delay = TimeInterval(index) * dockActivationPulseInterval
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                guard let self else { return }
+                let point = self.pointInsideEdge(bounds: display.bounds, edge: edge, offset: index)
+                self.postMouseMove(to: point)
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
-                self?.postMouseMove(to: originalLocation)
-            }
+        }
+
+        guard restoreCursor, let originalLocation else {
+            return
+        }
+
+        let restoreDelay = TimeInterval(dockActivationPulseCount) * dockActivationPulseInterval + 0.18
+        DispatchQueue.main.asyncAfter(deadline: .now() + restoreDelay) { [weak self] in
+            self?.postMouseMove(to: originalLocation)
         }
     }
 
-    private func pointInsideEdge(bounds: CGRect, edge: DockEdge) -> CGPoint {
+    private func pointInsideEdge(bounds: CGRect, edge: DockEdge, offset: Int = 0) -> CGPoint {
+        let wobble = CGFloat((offset % 3) - 1) * 3
         switch edge {
         case .bottom:
-            return CGPoint(x: bounds.midX, y: bounds.maxY - 8)
+            return CGPoint(x: bounds.midX + wobble, y: bounds.maxY - clampInset)
         case .left:
-            return CGPoint(x: bounds.minX + 8, y: bounds.midY)
+            return CGPoint(x: bounds.minX + clampInset, y: bounds.midY + wobble)
         case .right:
-            return CGPoint(x: bounds.maxX - 8, y: bounds.midY)
-        }
-    }
-
-    private func pointBeyondEdge(bounds: CGRect, edge: DockEdge) -> CGPoint {
-        switch edge {
-        case .bottom:
-            return CGPoint(x: bounds.midX, y: bounds.maxY + 48)
-        case .left:
-            return CGPoint(x: bounds.minX - 48, y: bounds.midY)
-        case .right:
-            return CGPoint(x: bounds.maxX + 48, y: bounds.midY)
+            return CGPoint(x: bounds.maxX - clampInset, y: bounds.midY + wobble)
         }
     }
 

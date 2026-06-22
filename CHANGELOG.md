@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.3
+
+- Fixed re-enabling protection not reliably moving the Dock back to the pinned display.
+- Reworked pin application to hold and pulse the pointer on the selected Dock edge long enough for macOS to switch Dock ownership.
+- Manual apply actions now leave the pointer on the pinned Dock edge so the result is visible and stable.
+- Opening the menu no longer restarts the event tap while protection is disabled.
+
 ## 0.1.2
 
 - Added first-run setup guide for Gatekeeper and Accessibility permission.

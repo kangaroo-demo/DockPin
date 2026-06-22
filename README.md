@@ -98,8 +98,8 @@ swift run DockPin --list-displays
 Push a version tag to create a GitHub Release automatically:
 
 ```sh
-git tag -a v0.1.2 -m "DockPin 0.1.2"
-git push origin v0.1.2
+git tag -a v0.1.3 -m "DockPin 0.1.3"
+git push origin v0.1.3
 ```
 
 The release workflow builds `dist/DockPin.zip` on macOS and uploads it to the release. It also supports Developer ID signing and notarization when Apple Developer secrets are configured. See [Signing and Notarization](docs/SIGNING_AND_NOTARIZATION.md).
