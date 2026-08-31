@@ -35,76 +35,54 @@ def vertical_gradient(size: int, top: tuple[int, int, int], bottom: tuple[int, i
 def draw_app_icon(size: int) -> Image.Image:
     scale = size / 1024
     image = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
 
-    shadow = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    shadow_draw = ImageDraw.Draw(shadow)
-    inset = int(46 * scale)
-    radius = int(210 * scale)
-    shadow_draw.rounded_rectangle(
-        (inset, inset + int(18 * scale), size - inset, size - inset + int(18 * scale)),
+    # Flat, bright brand mark: two display layers held by a single Dock rail.
+    # Keep the geometry bold and literal-detail-free so it survives at 16 px.
+    inset = int(42 * scale)
+    radius = int(190 * scale)
+    draw.rounded_rectangle(
+        (inset, inset, size - inset, size - inset),
         radius=radius,
-        fill=(0, 0, 0, 80),
-    )
-    shadow = shadow.filter(ImageFilter.GaussianBlur(int(28 * scale)))
-    image.alpha_composite(shadow)
-
-    mask = rounded_rectangle_mask(size - inset * 2, radius)
-    background = vertical_gradient(size - inset * 2, (22, 145, 255), (0, 100, 210))
-    icon_body = Image.new("RGBA", (size - inset * 2, size - inset * 2), (0, 0, 0, 0))
-    icon_body.alpha_composite(background)
-
-    body_draw = ImageDraw.Draw(icon_body)
-    side = size - inset * 2
-    body_draw.rounded_rectangle(
-        (int(48 * scale), int(50 * scale), side - int(48 * scale), side - int(48 * scale)),
-        radius=int(164 * scale),
-        outline=(255, 255, 255, 36),
-        width=max(2, int(6 * scale)),
+        fill=(244, 248, 255, 255),
     )
 
-    # Keep the mark intentionally simple so it stays readable at Dock size:
-    # one display, one Dock edge, one pin dot.
-    screen = (
-        int(side * 0.22),
-        int(side * 0.28),
-        int(side * 0.78),
-        int(side * 0.60),
-    )
-    body_draw.rounded_rectangle(
-        screen,
-        radius=int(42 * scale),
-        outline=(236, 247, 255, 248),
-        width=max(8, int(48 * scale)),
-    )
-    body_draw.rounded_rectangle(
-        (int(side * 0.28), int(side * 0.68), int(side * 0.72), int(side * 0.725)),
-        radius=int(18 * scale),
-        fill=(255, 255, 255, 232),
-    )
+    navy = (28, 54, 105, 255)
+    cobalt = (42, 103, 239, 255)
+    cyan = (13, 198, 196, 255)
+    coral = (255, 106, 86, 255)
 
-    pin_cx = side * 0.71
-    pin_cy = side * 0.31
-    pin_r = side * 0.095
-    body_draw.ellipse(
-        (
-            pin_cx - pin_r + int(8 * scale),
-            pin_cy - pin_r + int(10 * scale),
-            pin_cx + pin_r + int(8 * scale),
-            pin_cy + pin_r + int(10 * scale),
-        ),
-        fill=(0, 72, 145, 42),
+    # Connector first, so the two layers read as one stable system.
+    draw.rounded_rectangle(
+        (int(474 * scale), int(350 * scale), int(550 * scale), int(674 * scale)),
+        radius=int(38 * scale),
+        fill=navy,
     )
-    body_draw.ellipse(
-        (pin_cx - pin_r, pin_cy - pin_r, pin_cx + pin_r, pin_cy + pin_r),
-        fill=(34, 197, 94, 255),
+    # Upper and lower display layers.
+    draw.rounded_rectangle(
+        (int(188 * scale), int(220 * scale), int(836 * scale), int(424 * scale)),
+        radius=int(70 * scale),
+        fill=cobalt,
     )
-    body_draw.ellipse(
-        (pin_cx - pin_r * 0.42, pin_cy - pin_r * 0.42, pin_cx + pin_r * 0.42, pin_cy + pin_r * 0.42),
-        fill=(255, 255, 255, 245),
+    draw.rounded_rectangle(
+        (int(188 * scale), int(600 * scale), int(836 * scale), int(804 * scale)),
+        radius=int(70 * scale),
+        fill=cyan,
     )
-
-    icon_body.putalpha(Image.composite(mask, Image.new("L", mask.size, 0), mask))
-    image.alpha_composite(icon_body, (inset, inset))
+    # The Dock rail is the recognizable brand accent, not a map marker.
+    draw.rounded_rectangle(
+        (int(276 * scale), int(442 * scale), int(748 * scale), int(582 * scale)),
+        radius=int(62 * scale),
+        fill=coral,
+    )
+    draw.ellipse(
+        (int(462 * scale), int(468 * scale), int(562 * scale), int(568 * scale)),
+        fill=(244, 248, 255, 255),
+    )
+    draw.ellipse(
+        (int(493 * scale), int(499 * scale), int(531 * scale), int(537 * scale)),
+        fill=navy,
+    )
     return image
 
 
