@@ -34,8 +34,8 @@ base64 -i DeveloperIDApplication.p12 | pbcopy
 配置 secrets 后，推送版本 tag：
 
 ```sh
-git tag -a v0.1.1 -m "DockPin 0.1.1"
-git push origin v0.1.1
+git tag -a v0.2.0 -m "DockPin 0.2.0"
+git push origin v0.2.0
 ```
 
 Release workflow 会：

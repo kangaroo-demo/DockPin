@@ -8,6 +8,7 @@ final class PreferencesStore {
         static let protectedWidthFraction = "protectedWidthFraction"
         static let gateHoldDuration = "gateHoldDuration"
         static let bypassDuration = "bypassDuration"
+        static let runningAppBarEnabled = "runningAppBarEnabled"
         static let hasCompletedOnboarding = "hasCompletedOnboarding"
     }
 
@@ -67,6 +68,15 @@ final class PreferencesStore {
         }
         set {
             defaults.set(min(max(newValue, 0.20), 5.0), forKey: Key.bypassDuration)
+        }
+    }
+
+    var runningAppBarEnabled: Bool {
+        get {
+            defaults.object(forKey: Key.runningAppBarEnabled) as? Bool ?? false
+        }
+        set {
+            defaults.set(newValue, forKey: Key.runningAppBarEnabled)
         }
     }
 

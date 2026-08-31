@@ -16,6 +16,8 @@
 "menu.edge" = "Dock 边缘";
 "menu.protected_width" = "边缘范围";
 "menu.pass_through_delay" = "穿透延迟";
+"menu.running_app_bar" = "在其他显示器显示运行应用栏";
+"menu.running_app_bar_permission_needed" = "运行应用栏（需要辅助功能权限）";
 "menu.percent_format" = "%d%%";
 "menu.seconds_format" = "%.2f 秒";
 "menu.launch_at_login" = "开机自启动";

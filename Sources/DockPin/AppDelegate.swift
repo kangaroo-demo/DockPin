@@ -5,6 +5,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let preferences = PreferencesStore()
     private let displayManager = DisplayManager()
     private let launchAtLogin = LaunchAtLoginController()
+    private let runningAppBarController = RunningAppBarController()
 
     private lazy var edgeController = DockEdgeController(
         displayManager: displayManager,
@@ -20,12 +21,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var refreshTimer: Timer?
     private var onboardingWindowController: OnboardingWindowController?
     private var isRestoringBeforeQuit = false
+    private var eventTapWasRunning = false
+    private var dockProtectionReadyAt = Date.distantFuture
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
         setupStatusItem()
+        requestAccessibilityPermissionIfNeeded()
         syncEventTap()
         rebuildMenu()
+        syncRunningAppBar()
+        recordRuntimeDiagnostics()
         showOnboardingIfNeeded()
         applyPinnedDock(after: 0.35, restoreCursor: true)
 
@@ -54,6 +60,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         isRestoringBeforeQuit = true
         refreshTimer?.invalidate()
         eventTapController.stop()
+        runningAppBarController.stop()
 
         DispatchQueue.main.async { [weak self] in
             self?.edgeController.restoreSystemDefaultDockBeforeExit()
@@ -66,6 +73,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func applicationWillTerminate(_ notification: Notification) {
         refreshTimer?.invalidate()
         eventTapController.stop()
+        runningAppBarController.stop()
     }
 
     private func setupStatusItem() {
@@ -85,9 +93,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         statusItem?.menu = menu
     }
 
+    private func requestAccessibilityPermissionIfNeeded() {
+        guard !AXIsProcessTrusted() else {
+            return
+        }
+
+        let promptKey = kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String
+        AXIsProcessTrustedWithOptions([promptKey: true] as CFDictionary)
+    }
+
     func menuWillOpen(_ menu: NSMenu) {
         edgeController.refreshAnchor(force: true)
         syncEventTap()
+        syncRunningAppBar()
         rebuildMenu()
     }
 
@@ -113,6 +131,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(edgePickerItem())
         menu.addItem(widthPickerItem())
         menu.addItem(delayPickerItem())
+        menu.addItem(runningAppBarItem())
 
         menu.addItem(.separator())
         menu.addItem(launchAtLoginItem())
@@ -140,8 +159,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
 
         switch eventTapController.state {
-        case .running:
+        case .running where eventTapController.isOperational:
             return L10n.t("status.event_tap_ok")
+        case .running:
+            return L10n.t("status.event_tap_unavailable")
         case .unavailable:
             return L10n.t("status.event_tap_unavailable")
         case .stopped:
@@ -250,6 +271,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         return item
     }
 
+    private func runningAppBarItem() -> NSMenuItem {
+        let isAvailable = AXIsProcessTrusted() && eventTapController.isOperational
+        let item = NSMenuItem(
+            title: L10n.t(isAvailable ? "menu.running_app_bar" : "menu.running_app_bar_permission_needed"),
+            action: #selector(toggleRunningAppBar),
+            keyEquivalent: ""
+        )
+        item.state = preferences.runningAppBarEnabled ? .on : .off
+        item.isEnabled = isAvailable
+        return item
+    }
+
     private func quitItem() -> NSMenuItem {
         let item = NSMenuItem(
             title: L10n.t("menu.quit"),
@@ -271,6 +304,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         preferences.selectedDisplayUUID = payload["uuid"]?.isEmpty == false ? payload["uuid"] : nil
         preferences.selectedDisplayName = name
         edgeController.refreshAnchor(force: true)
+        syncRunningAppBar()
         applyPinnedDock(after: 0.08, restoreCursor: false)
         rebuildMenu()
     }
@@ -315,8 +349,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         rebuildMenu()
     }
 
+    @objc private func toggleRunningAppBar() {
+        preferences.runningAppBarEnabled.toggle()
+        syncRunningAppBar()
+        rebuildMenu()
+    }
+
     @objc private func refreshDisplays() {
         edgeController.refreshAnchor(force: true)
+        runningAppBarController.refreshScreens(targetDisplayID: edgeController.currentAnchor?.id)
         syncEventTap()
         rebuildMenu()
     }
@@ -347,12 +388,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     @objc private func screenParametersChanged() {
         edgeController.refreshAnchor(force: true)
+        runningAppBarController.refreshScreens(targetDisplayID: edgeController.currentAnchor?.id)
         rebuildMenu()
     }
 
     @objc private func periodicRefresh() {
         syncEventTap()
         edgeController.refreshAnchor()
+        syncRunningAppBar()
+        recordRuntimeDiagnostics()
     }
 
     private func showError(message: String, details: String) {
@@ -367,6 +411,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func syncEventTap() {
         guard AXIsProcessTrusted() else {
             eventTapController.stop()
+            eventTapWasRunning = false
+            dockProtectionReadyAt = .distantFuture
             return
         }
 
@@ -374,6 +420,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         if eventTapController.state == .stopped {
             eventTapController.start()
         }
+
+        let isRunning = eventTapController.isOperational
+        if isRunning && !eventTapWasRunning {
+            dockProtectionReadyAt = Date().addingTimeInterval(1.1)
+            edgeController.nudgePinnedDock(restoreCursor: true)
+        } else if !isRunning {
+            dockProtectionReadyAt = .distantFuture
+        }
+        eventTapWasRunning = isRunning
     }
 
     private func applyPinnedDock(after delay: TimeInterval, restoreCursor: Bool) {
@@ -381,6 +436,48 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
             self?.edgeController.nudgePinnedDock(restoreCursor: restoreCursor)
         }
+    }
+
+    private func syncRunningAppBar() {
+        let targetDisplayID = edgeController.currentAnchor?.id
+        let nativeDockDisplayID = DockSystemController.owningDisplayID(for: preferences.dockEdge)
+        let canPreventNativeDock = AXIsProcessTrusted()
+            && eventTapController.isOperational
+            && Date() >= dockProtectionReadyAt
+            && nativeDockDisplayID == targetDisplayID
+        runningAppBarController.setEnabled(
+            preferences.runningAppBarEnabled && canPreventNativeDock,
+            targetDisplayID: targetDisplayID
+        )
+    }
+
+    private func recordRuntimeDiagnostics() {
+        let eventTapState: String
+        switch eventTapController.state {
+        case .stopped:
+            eventTapState = "stopped"
+        case .running:
+            eventTapState = "running"
+        case .unavailable:
+            eventTapState = "unavailable"
+        }
+
+        UserDefaults.standard.set(
+            [
+                "pid": Int(ProcessInfo.processInfo.processIdentifier),
+                "accessibilityTrusted": AXIsProcessTrusted(),
+                "eventTapState": eventTapState,
+                "eventTapOperational": eventTapController.isOperational,
+                "targetDisplayID": Int(edgeController.currentAnchor?.id ?? 0),
+                "nativeDockDisplayID": Int(
+                    DockSystemController.owningDisplayID(for: preferences.dockEdge) ?? 0
+                ),
+                "runningAppBarPreference": preferences.runningAppBarEnabled,
+                "runningAppBar": runningAppBarController.diagnosticSummary,
+                "updatedAt": Date().timeIntervalSince1970
+            ],
+            forKey: "runtimeDiagnostics"
+        )
     }
 
     private func showOnboardingIfNeeded() {

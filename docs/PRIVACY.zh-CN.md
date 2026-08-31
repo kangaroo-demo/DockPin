@@ -10,4 +10,6 @@ DockPin 只在本机运行。
 
 DockPin 使用 `UserDefaults` 在本机保存偏好设置。
 
+启用可选的运行应用栏后，DockPin 会读取本机正在运行的应用列表来显示图标。该列表不会被保存或传输。
+
 DockPin 需要辅助功能权限，是因为 macOS 要求观察或调整鼠标移动的 event tap 工具必须获得该权限。DockPin 只用这个权限在你选择的 Dock 边缘附近实现软拦截。

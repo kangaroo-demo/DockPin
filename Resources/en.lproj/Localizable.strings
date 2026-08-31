@@ -16,6 +16,8 @@
 "menu.edge" = "Dock Edge";
 "menu.protected_width" = "Edge Range";
 "menu.pass_through_delay" = "Pass-through Delay";
+"menu.running_app_bar" = "Running Apps Bar on Other Displays";
+"menu.running_app_bar_permission_needed" = "Running Apps Bar (Accessibility Needed)";
 "menu.percent_format" = "%d%%";
 "menu.seconds_format" = "%.2fs";
 "menu.launch_at_login" = "Launch at Login";

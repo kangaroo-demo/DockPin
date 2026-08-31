@@ -44,12 +44,14 @@ final class DockEdgeController {
 
     private let edgeBand: CGFloat = 72
     private let clampInset: CGFloat = 1
+    private let nonTargetGuardBand: CGFloat = 14
+    private let nonTargetGuardInset: CGFloat = 18
     private let activationMargin: CGFloat = 10
     private let adjacencyTolerance: CGFloat = 4
     private let minimumActivationSpan: CGFloat = 24
     private let refreshInterval: TimeInterval = 1.0
-    private let dockActivationPulseCount = 14
-    private let dockActivationPulseInterval: TimeInterval = 0.055
+    private let dockActivationPulseCount = 22
+    private let dockActivationPulseInterval: TimeInterval = 0.045
 
     init(displayManager: DisplayManager, preferences: PreferencesStore) {
         self.displayManager = displayManager
@@ -144,7 +146,45 @@ final class DockEdgeController {
         let location = event.location
         let edge = preferences.dockEdge
 
+        if let nonTargetDisplay = displaySnapshot.first(where: {
+            $0.id != anchor.id && isInsideExposedDockEdge(point: location, display: $0, edge: edge)
+        }) {
+            gateStartedAt = nil
+            guard isMovingOutward(event: event, edge: edge) else {
+                return event
+            }
+            let clamped = clampedAwayFromDockEdge(location, display: nonTargetDisplay, edge: edge)
+            event.location = clamped
+            event.setIntegerValueField(.mouseEventDeltaX, value: 0)
+            event.setIntegerValueField(.mouseEventDeltaY, value: 0)
+            CGWarpMouseCursorPosition(clamped)
+            return event
+        }
+
         guard isInsideProtectedZone(point: location, bounds: anchor.bounds, edge: edge) else {
+            gateStartedAt = nil
+            return event
+        }
+
+        // A shared boundary is a real route into the adjacent display, not
+        // an exposed Dock edge.  The automatic Dock nudge already targets an
+        // exposed segment; moving a live pointer from a shared boundary to
+        // that segment causes large sideways warps in stacked layouts.
+        guard !isCoveredByAdjacentDisplay(
+            position: edgePosition(of: location, edge: edge),
+            display: anchor,
+            edge: edge
+        ) else {
+            gateStartedAt = nil
+            return event
+        }
+
+        // The gate is only meant to delay crossing *outward* through the
+        // selected edge.  Clamping every event in the band also clamps a
+        // user who is moving back into the target display, which can warp
+        // the cursor back across a stacked-display boundary and feel like a
+        // jump between screens.
+        guard isMovingOutward(event: event, edge: edge) else {
             gateStartedAt = nil
             return event
         }
@@ -170,6 +210,26 @@ final class DockEdgeController {
         event.location = clamped
         CGWarpMouseCursorPosition(clamped)
         return event
+    }
+
+    private func isMovingOutward(event: CGEvent, edge: DockEdge) -> Bool {
+        switch edge {
+        case .bottom:
+            return event.getIntegerValueField(.mouseEventDeltaY) > 0
+        case .left:
+            return event.getIntegerValueField(.mouseEventDeltaX) < 0
+        case .right:
+            return event.getIntegerValueField(.mouseEventDeltaX) > 0
+        }
+    }
+
+    private func edgePosition(of point: CGPoint, edge: DockEdge) -> CGFloat {
+        switch edge {
+        case .bottom:
+            return point.x
+        case .left, .right:
+            return point.y
+        }
     }
 
     private func isInsideProtectedZone(point: CGPoint, bounds: CGRect, edge: DockEdge) -> Bool {
@@ -226,6 +286,78 @@ final class DockEdgeController {
         }
     }
 
+    private func isInsideExposedDockEdge(point: CGPoint, display: DisplayInfo, edge: DockEdge) -> Bool {
+        let bounds = display.bounds
+
+        switch edge {
+        case .bottom:
+            guard point.x >= bounds.minX,
+                  point.x <= bounds.maxX,
+                  point.y >= bounds.maxY - nonTargetGuardBand,
+                  point.y <= bounds.maxY + 1 else {
+                return false
+            }
+            return !isCoveredByAdjacentDisplay(position: point.x, display: display, edge: edge)
+
+        case .left:
+            guard point.y >= bounds.minY,
+                  point.y <= bounds.maxY,
+                  point.x >= bounds.minX - 1,
+                  point.x <= bounds.minX + nonTargetGuardBand else {
+                return false
+            }
+            return !isCoveredByAdjacentDisplay(position: point.y, display: display, edge: edge)
+
+        case .right:
+            guard point.y >= bounds.minY,
+                  point.y <= bounds.maxY,
+                  point.x >= bounds.maxX - nonTargetGuardBand,
+                  point.x <= bounds.maxX + 1 else {
+                return false
+            }
+            return !isCoveredByAdjacentDisplay(position: point.y, display: display, edge: edge)
+        }
+    }
+
+    private func isCoveredByAdjacentDisplay(position: CGFloat, display: DisplayInfo, edge: DockEdge) -> Bool {
+        let bounds = display.bounds
+        let otherBounds = displaySnapshot
+            .filter { $0.id != display.id }
+            .map(\.bounds)
+
+        switch edge {
+        case .bottom:
+            return otherBounds.contains {
+                abs($0.minY - bounds.maxY) <= adjacencyTolerance &&
+                    position >= max(bounds.minX, $0.minX) &&
+                    position <= min(bounds.maxX, $0.maxX)
+            }
+        case .left:
+            return otherBounds.contains {
+                abs($0.maxX - bounds.minX) <= adjacencyTolerance &&
+                    position >= max(bounds.minY, $0.minY) &&
+                    position <= min(bounds.maxY, $0.maxY)
+            }
+        case .right:
+            return otherBounds.contains {
+                abs($0.minX - bounds.maxX) <= adjacencyTolerance &&
+                    position >= max(bounds.minY, $0.minY) &&
+                    position <= min(bounds.maxY, $0.maxY)
+            }
+        }
+    }
+
+    private func clampedAwayFromDockEdge(_ point: CGPoint, display: DisplayInfo, edge: DockEdge) -> CGPoint {
+        switch edge {
+        case .bottom:
+            return CGPoint(x: point.x, y: display.bounds.maxY - nonTargetGuardInset)
+        case .left:
+            return CGPoint(x: display.bounds.minX + nonTargetGuardInset, y: point.y)
+        case .right:
+            return CGPoint(x: display.bounds.maxX - nonTargetGuardInset, y: point.y)
+        }
+    }
+
     private func defaultDisplay(for edge: DockEdge) -> DisplayInfo? {
         let displays = displaySnapshot.isEmpty ? displayManager.displays() : displaySnapshot
         switch edge {
@@ -247,8 +379,13 @@ final class DockEdgeController {
             let delay = TimeInterval(index) * dockActivationPulseInterval
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
                 guard let self else { return }
-                let point = self.pointInsideEdge(display: display, edge: edge, offset: index, reference: originalLocation)
-                self.postMouseMove(to: point)
+                let pulse = self.dockActivationPulse(
+                    display: display,
+                    edge: edge,
+                    index: index,
+                    reference: originalLocation
+                )
+                self.postMouseMove(to: pulse.point, deltaX: pulse.deltaX, deltaY: pulse.deltaY)
             }
         }
 
@@ -259,6 +396,42 @@ final class DockEdgeController {
         let restoreDelay = TimeInterval(dockActivationPulseCount) * dockActivationPulseInterval + 0.18
         DispatchQueue.main.asyncAfter(deadline: .now() + restoreDelay) { [weak self] in
             self?.postMouseMove(to: originalLocation)
+        }
+    }
+
+    private func dockActivationPulse(
+        display: DisplayInfo,
+        edge: DockEdge,
+        index: Int,
+        reference: CGPoint?
+    ) -> (point: CGPoint, deltaX: Int64, deltaY: Int64) {
+        let edgePoint = pointInsideEdge(
+            display: display,
+            edge: edge,
+            offset: index,
+            reference: reference
+        )
+        let approachDistance = max(1, 28 - CGFloat(index) * 4)
+
+        switch edge {
+        case .bottom:
+            return (
+                CGPoint(x: edgePoint.x, y: display.bounds.maxY - approachDistance),
+                0,
+                12
+            )
+        case .left:
+            return (
+                CGPoint(x: display.bounds.minX + approachDistance, y: edgePoint.y),
+                -12,
+                0
+            )
+        case .right:
+            return (
+                CGPoint(x: display.bounds.maxX - approachDistance, y: edgePoint.y),
+                12,
+                0
+            )
         }
     }
 
@@ -371,13 +544,16 @@ final class DockEdgeController {
         } ?? EdgeSegment(start: reference, end: reference)
     }
 
-    private func postMouseMove(to point: CGPoint) {
+    private func postMouseMove(to point: CGPoint, deltaX: Int64 = 0, deltaY: Int64 = 0) {
         CGWarpMouseCursorPosition(point)
-        CGEvent(
+        let event = CGEvent(
             mouseEventSource: nil,
             mouseType: .mouseMoved,
             mouseCursorPosition: point,
             mouseButton: .left
-        )?.post(tap: .cghidEventTap)
+        )
+        event?.setIntegerValueField(.mouseEventDeltaX, value: deltaX)
+        event?.setIntegerValueField(.mouseEventDeltaY, value: deltaY)
+        event?.post(tap: .cghidEventTap)
     }
 }

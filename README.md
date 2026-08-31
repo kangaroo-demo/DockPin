@@ -22,8 +22,10 @@ It is built for multiple-display setups where the Dock keeps moving to the wrong
 - Lets you choose the target display.
 - Supports bottom, left, and right Dock edges.
 - Uses a soft pointer gate near the chosen display edge so the Dock stays on the intended display while normal cross-display movement remains possible.
+- Blocks the native Dock from being summoned on non-target outer display edges.
 - Restores the Dock to the system default outer display edge when you quit DockPin.
 - Lets you tune edge range and pass-through delay.
+- Can show a hover-activated running-app bar on displays that do not own the Dock.
 - Supports Launch at Login.
 - Includes a first-run setup guide for Gatekeeper and Accessibility permission.
 - Supports English and Simplified Chinese UI.
@@ -35,6 +37,8 @@ Common search terms: macOS Dock utility, multi-monitor Dock fix, multiple displa
 macOS does not expose a public API for directly assigning the Dock to a specific display. DockPin does not patch the Dock, modify system files, inject code into Dock, or use private APIs.
 
 DockPin works by using a Quartz event tap and Accessibility permission to gently clamp pointer movement near the chosen Dock edge. This helps macOS treat that display edge as the Dock edge.
+
+The optional running-app bar is a compact app switcher, not a second copy of the macOS Dock. It shows running applications only and floats above existing windows without changing their layout.
 
 ## Install
 
@@ -68,6 +72,7 @@ Click `DockPin` in the menu bar.
 - Changing `Dock Edge` also changes the macOS Dock position.
 - `Edge Range`: choose how much of that edge DockPin watches.
 - `Pass-through Delay`: choose how long DockPin waits before letting the pointer pass through to another display.
+- `Running Apps Bar on Other Displays`: reveal a compact app switcher by pausing near the bottom-inside edge of another display. Click an icon to activate that app. The bar floats above windows and does not reserve desktop space.
 - `Launch at Login`: start DockPin automatically after login.
 - Hold `Option` while crossing the watched edge to bypass the gate immediately.
 
@@ -105,13 +110,21 @@ List displays without launching the menu bar app:
 swift run DockPin --list-displays
 ```
 
+Local diagnostics and interactive multi-display checks:
+
+```sh
+swift run DockPin --diagnose
+swift run DockPin --self-test-guard
+swift run DockPin --self-test-bar
+```
+
 ## Release
 
 Push a version tag to create a GitHub Release automatically:
 
 ```sh
-git tag -a v0.1.8 -m "DockPin 0.1.8"
-git push origin v0.1.8
+git tag -a v0.2.0 -m "DockPin 0.2.0"
+git push origin v0.2.0
 ```
 
 The release workflow builds `dist/DockPin.zip` on macOS and uploads it to the release. It also supports Developer ID signing and notarization when Apple Developer secrets are configured. See [Signing and Notarization](docs/SIGNING_AND_NOTARIZATION.md).
@@ -121,6 +134,7 @@ The release workflow builds `dist/DockPin.zip` on macOS and uploads it to the re
 DockPin does not collect analytics, make network requests, or store personal data. Settings are stored locally with `UserDefaults`.
 
 Accessibility permission is used only so DockPin can observe pointer movement and apply the soft edge gate.
+When the optional running-app bar is enabled, DockPin reads the local list of running applications to show their icons and does not store or transmit that list.
 
 ## Troubleshooting
 
@@ -134,9 +148,11 @@ Try increasing `Edge Range` or `Pass-through Delay`. Also confirm the selected `
 
 For stacked layouts, DockPin activates the nearest exposed part of the target display edge. If another display completely covers the selected edge, macOS may not expose a public way for DockPin to force that edge reliably.
 
+Shared boundaries between stacked displays remain pass-through areas. DockPin only clamps exposed outer edge segments, so crossing directly between upper and lower displays should not move the pointer sideways or bounce it back.
+
 ### I cannot move to the other display
 
-Lower `Edge Range`, lower `Pass-through Delay`, cross through an unwatched edge area, or hold `Option` while crossing.
+Install version 0.2.0 or later, which excludes shared display boundaries from edge clamping. For exposed watched edges, lower `Edge Range`, lower `Pass-through Delay`, cross through an unwatched edge area, or hold `Option` while crossing.
 
 ## License
 

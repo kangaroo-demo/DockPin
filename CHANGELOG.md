@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.2.0
+
+### Added
+
+- Added an optional running-app bar for every display that does not own the native Dock.
+- Reveals the bar after a short hover near the bottom-inside edge and hides it after the pointer leaves.
+- Shows regular running applications with their native icons, active-app indicator, hidden-app dimming, and click-to-activate behavior.
+- Matches the system Dock tile size where practical and uses a floating native-style blur, continuous transparent corners, and a layout that does not reserve desktop space.
+- Added a persistent, bilingual menu setting for the running-app bar plus runtime diagnostics and self-test commands.
+
+### Fixed
+
+- Prevented the native Dock from being summoned on exposed outer edges of non-target displays, avoiding duplicate native and custom bars.
+- Fixed stacked-display cursor jumps by excluding shared display boundaries from Dock edge clamping. Normal movement between upper and lower displays now stays on the original horizontal path.
+- Made pointer gates direction-aware so moving inward from an edge is never warped back outward.
+- Re-pins the native Dock before enabling the running-app bar after Accessibility permission or event-tap access becomes available.
+- Recovers automatically if macOS disables the event tap and hides the running-app bar whenever native-Dock protection is unavailable.
+- Uses a stable designated requirement for local ad-hoc builds so rebuilding does not unnecessarily invalidate Accessibility permission.
+- Fixed community release packaging when no code-signing identity is configured.
+
 ## 0.1.9
 
 - Simplified the app icon for better readability at Dock and Finder sizes.

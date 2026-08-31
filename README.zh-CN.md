@@ -22,8 +22,10 @@ DockPin 是一个免费开源的 macOS 菜单栏小工具，用来解决多显�
 - 可以选择目标显示器。
 - 支持 Dock 的底部、左侧、右侧边缘。
 - 在目标显示器的指定边缘做“软拦截”，帮助 macOS 把这条边当作 Dock 边缘，同时保留正常跨屏移动。
+- 阻止原生 Dock 在非目标显示器的外侧边缘被误触唤出。
 - 退出 DockPin 时会把 Dock 还原到系统默认的外侧显示器边缘。
 - 可以调整边缘范围和穿透延迟。
+- 可以在没有原生 Dock 的显示器上提供悬停唤出的运行应用栏。
 - 支持开机自启动。
 - 包含首次设置向导，用于说明 Gatekeeper 和辅助功能权限。
 - 支持英文和简体中文界面。
@@ -35,6 +37,8 @@ DockPin 是一个免费开源的 macOS 菜单栏小工具，用来解决多显�
 macOS 没有公开 API 可以直接把 Dock 指定到某个显示器。DockPin 不会修改 Dock、不改系统文件、不注入 Dock 进程，也不使用私有 API。
 
 DockPin 的原理是使用 Quartz event tap 和辅助功能权限，在你选择的 Dock 边缘附近轻量限制鼠标移动，让 macOS 更容易把该显示器边缘视为 Dock 边缘。
+
+可选的运行应用栏只是轻量应用切换器，并不是第二个 macOS Dock。它只显示运行中的应用，以悬浮方式出现，不会改变现有窗口布局。
 
 ## 安装
 
@@ -68,6 +72,7 @@ DockPin 的原理是使用 Quartz event tap 和辅助功能权限，在你选择
 - 修改 `Dock 边缘` 也会同步修改 macOS 自己的 Dock 位置。
 - `边缘范围`：选择 DockPin 观察目标边缘的范围。
 - `穿透延迟`：选择鼠标继续滑动多久后放行到另一块屏幕。
+- `在其他显示器显示运行应用栏`：鼠标在其他显示器底部内侧短暂停留时显示轻量应用切换栏，点击图标即可切换；它悬浮在窗口上方，不会占用桌面可用区域。
 - `开机自启动`：登录后自动启动 DockPin。
 - 按住 `Option` 穿过目标边缘，可以立即放行。
 
@@ -105,13 +110,21 @@ open dist/DockPin.app
 swift run DockPin --list-displays
 ```
 
+本地诊断和多显示器交互自测：
+
+```sh
+swift run DockPin --diagnose
+swift run DockPin --self-test-guard
+swift run DockPin --self-test-bar
+```
+
 ## 发布
 
 推送版本 tag 后会自动创建 GitHub Release：
 
 ```sh
-git tag -a v0.1.8 -m "DockPin 0.1.8"
-git push origin v0.1.8
+git tag -a v0.2.0 -m "DockPin 0.2.0"
+git push origin v0.2.0
 ```
 
 Release workflow 会在 macOS 上构建 `dist/DockPin.zip`，并上传到对应的 Release。如果配置了 Apple Developer secrets，也支持 Developer ID 签名和公证。见[签名与公证说明](docs/SIGNING_AND_NOTARIZATION.zh-CN.md)。
@@ -121,6 +134,7 @@ Release workflow 会在 macOS 上构建 `dist/DockPin.zip`，并上传到对应�
 DockPin 不收集分析数据，不发起网络请求，也不存储个人数据。设置只通过 `UserDefaults` 保存在本机。
 
 辅助功能权限只用于观察鼠标移动，并在目标边缘应用软拦截。
+启用可选的运行应用栏后，DockPin 只会读取本机正在运行的应用列表来显示图标，不会保存或传输该列表。
 
 ## 常见问题
 
@@ -134,9 +148,11 @@ DockPin 不收集分析数据，不发起网络请求，也不存储个人数据
 
 在上下排列的屏幕布局中，DockPin 会使用目标显示器边缘上没有被另一块屏幕覆盖的真实外边缘。如果另一块屏幕完全覆盖了所选边缘，macOS 公开能力下可能无法稳定强制这条边缘。
 
+上下屏之间的共享边界会始终保持可穿透。DockPin 只限制真实外露的边缘，因此鼠标直接在上下屏之间移动时，不应再横向跳动或被弹回原屏幕。
+
 ### 鼠标不容易移动到另一块屏幕
 
-调低“边缘范围”、调低“穿透延迟”、从未观察的边缘区域穿过，或者按住 `Option` 穿过。
+请先安装 0.2.0 或更新版本，该版本已将显示器共享边界排除在边缘限制之外。对于真实外露且正在观察的边缘，可以调低“边缘范围”或“穿透延迟”、从未观察区域穿过，或者按住 `Option` 穿过。
 
 ## 许可证
 

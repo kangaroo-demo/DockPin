@@ -13,6 +13,13 @@ final class EventTapController {
 
     private(set) var state: State = .stopped
 
+    var isOperational: Bool {
+        guard state == .running, let eventTap else {
+            return false
+        }
+        return CGEvent.tapIsEnabled(tap: eventTap)
+    }
+
     init(handler: @escaping (CGEventType, CGEvent) -> CGEvent) {
         self.handler = handler
     }
@@ -36,7 +43,7 @@ final class EventTapController {
 
         let userInfo = Unmanaged.passUnretained(self).toOpaque()
         guard let tap = CGEvent.tapCreate(
-            tap: .cgSessionEventTap,
+            tap: .cghidEventTap,
             place: .headInsertEventTap,
             options: .defaultTap,
             eventsOfInterest: mask,
@@ -85,7 +92,17 @@ final class EventTapController {
     }
 
     func retryIfNeeded() {
-        if state == .unavailable || eventTap == nil {
+        if let eventTap, state == .running {
+            if !CGEvent.tapIsEnabled(tap: eventTap) {
+                CGEvent.tapEnable(tap: eventTap, enable: true)
+            }
+
+            if CGEvent.tapIsEnabled(tap: eventTap) {
+                return
+            }
+        }
+
+        if state == .unavailable || eventTap == nil || !isOperational {
             stop()
             start()
         }

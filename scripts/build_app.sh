@@ -7,7 +7,13 @@ APP_DIR="$ROOT_DIR/dist/DockPin.app"
 CONTENTS_DIR="$APP_DIR/Contents"
 MACOS_DIR="$CONTENTS_DIR/MacOS"
 RESOURCES_DIR="$CONTENTS_DIR/Resources"
-CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY:--}"
+if [[ -z "${CODE_SIGN_IDENTITY:-}" ]]; then
+  if security find-identity -v -p codesigning 2>/dev/null | grep -Fq '"DockPin Local Development"'; then
+    CODE_SIGN_IDENTITY="DockPin Local Development"
+  else
+    CODE_SIGN_IDENTITY="-"
+  fi
+fi
 STAGING_DIR="$(mktemp -d /tmp/dockpin-build.XXXXXX)"
 STAGING_APP="$STAGING_DIR/DockPin.app"
 STAGING_CONTENTS="$STAGING_APP/Contents"
@@ -34,7 +40,12 @@ fi
 xattr -cr "$STAGING_APP" || true
 
 CODE_SIGN_ARGS=(--force --deep --sign "$CODE_SIGN_IDENTITY")
-if [[ "$CODE_SIGN_IDENTITY" != "-" ]]; then
+if [[ "$CODE_SIGN_IDENTITY" == "-" ]]; then
+  # Keep one stable designated requirement across local ad-hoc rebuilds.
+  # Without this, codesign falls back to a CDHash requirement and every
+  # rebuild silently invalidates the existing Accessibility permission.
+  CODE_SIGN_ARGS+=(--requirements '=designated => identifier "com.kangaroo-demo.DockPin"')
+else
   CODE_SIGN_ARGS+=(--timestamp --options runtime)
 fi
 

@@ -2,7 +2,13 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CODE_SIGN_IDENTITY="${CODE_SIGN_IDENTITY:--}"
+if [[ -z "${CODE_SIGN_IDENTITY:-}" ]]; then
+  if security find-identity -v -p codesigning 2>/dev/null | grep -Fq '"DockPin Local Development"'; then
+    CODE_SIGN_IDENTITY="DockPin Local Development"
+  else
+    CODE_SIGN_IDENTITY="-"
+  fi
+fi
 
 "$ROOT_DIR/scripts/build_app.sh" release
 
@@ -16,7 +22,9 @@ PACKAGE_APP="$PACKAGE_DIR/DockPin.app"
 ditto --norsrc --noextattr DockPin.app "$PACKAGE_APP"
 
 CODE_SIGN_ARGS=(--force --deep --sign "$CODE_SIGN_IDENTITY")
-if [[ "$CODE_SIGN_IDENTITY" != "-" ]]; then
+if [[ "$CODE_SIGN_IDENTITY" == "-" ]]; then
+  CODE_SIGN_ARGS+=(--requirements '=designated => identifier "com.kangaroo-demo.DockPin"')
+else
   CODE_SIGN_ARGS+=(--timestamp --options runtime)
 fi
 codesign "${CODE_SIGN_ARGS[@]}" "$PACKAGE_APP"
