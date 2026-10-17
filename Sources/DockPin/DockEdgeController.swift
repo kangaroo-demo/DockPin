@@ -41,6 +41,7 @@ final class DockEdgeController {
     private var gateStartedAt: Date?
     private var bypassUntil = Date.distantPast
     private var lastRefresh = Date.distantPast
+    private var nudgeGeneration = 0
 
     private let edgeBand: CGFloat = 72
     private let clampInset: CGFloat = 1
@@ -74,6 +75,9 @@ final class DockEdgeController {
 
         lastRefresh = Date()
         let displays = displayManager.displays()
+        if displays != displaySnapshot {
+            cancelNudge()
+        }
         displaySnapshot = displays
 
         if let selected = displays.first(where: {
@@ -94,6 +98,11 @@ final class DockEdgeController {
         bypassUntil = .distantPast
     }
 
+    func cancelNudge() {
+        nudgeGeneration += 1
+        resetGate()
+    }
+
     func nudgePinnedDock(restoreCursor: Bool = true) {
         refreshAnchor(force: true)
         guard let anchor else {
@@ -112,6 +121,7 @@ final class DockEdgeController {
     }
 
     func restoreSystemDefaultDockBeforeExit() {
+        cancelNudge()
         refreshAnchor(force: true)
         resetGate()
 
@@ -371,6 +381,8 @@ final class DockEdgeController {
     }
 
     private func nudgeDock(to display: DisplayInfo, edge: DockEdge, restoreCursor: Bool) {
+        cancelNudge()
+        let generation = nudgeGeneration
         let originalLocation = CGEvent(source: nil)?.location
         gateStartedAt = nil
         bypassUntil = .distantPast
@@ -378,7 +390,7 @@ final class DockEdgeController {
         for index in 0..<dockActivationPulseCount {
             let delay = TimeInterval(index) * dockActivationPulseInterval
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
-                guard let self else { return }
+                guard let self, self.nudgeGeneration == generation else { return }
                 let pulse = self.dockActivationPulse(
                     display: display,
                     edge: edge,
@@ -395,7 +407,8 @@ final class DockEdgeController {
 
         let restoreDelay = TimeInterval(dockActivationPulseCount) * dockActivationPulseInterval + 0.18
         DispatchQueue.main.asyncAfter(deadline: .now() + restoreDelay) { [weak self] in
-            self?.postMouseMove(to: originalLocation)
+            guard let self, self.nudgeGeneration == generation else { return }
+            self.postMouseMove(to: originalLocation)
         }
     }
 

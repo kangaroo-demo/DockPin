@@ -14,6 +14,10 @@ let package = Package(
         .executableTarget(
             name: "DockPin",
             path: "Sources/DockPin"
+        ),
+        .testTarget(
+            name: "DockPinTests",
+            dependencies: ["DockPin"]
         )
     ]
 )

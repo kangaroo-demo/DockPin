@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1
+
+### Fixed
+
+- Automatically reapply the saved target display after reconnecting an external monitor, changing the display layout, or waking the Mac. Wait for display setup to settle and retry a limited number of times if Dock ownership has not caught up.
+- Cancel stale Dock activation pulses when the display configuration or selected target changes, on sleep, and before quitting.
+
 ## 0.2.0
 
 ### Added

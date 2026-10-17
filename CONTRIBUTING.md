@@ -12,6 +12,14 @@ open dist/DockPin.app
 
 DockPin needs Accessibility permission before the event tap can control pointer movement.
 
+Run the recovery regression tests with full Xcode (XCTest is not included in the standalone Command Line Tools):
+
+```sh
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcrun swift test --scratch-path .build/xcode-tests
+```
+
+The tests simulate disconnect, reconnect, wake, and cancellation without moving the pointer or changing display settings.
+
 ## Pull Requests
 
 - Keep changes focused.

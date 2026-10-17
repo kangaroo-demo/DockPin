@@ -16,11 +16,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         self?.edgeController.handle(event: event) ?? event
     }
 
+    private lazy var pinRecoveryController = DockPinRecoveryController(
+        applyPin: { [weak self] restoreCursor in
+            guard let self, !self.isRestoringBeforeQuit, !self.displaysAreAsleep,
+                  AXIsProcessTrusted(), self.eventTapController.isOperational else {
+                return false
+            }
+            self.edgeController.refreshAnchor(force: true)
+            guard self.edgeController.currentAnchor != nil else {
+                return false
+            }
+            self.dockProtectionReadyAt = Date().addingTimeInterval(1.2)
+            self.edgeController.nudgePinnedDock(restoreCursor: restoreCursor)
+            return true
+        },
+        isPinned: { [weak self] in
+            guard let self, let target = self.edgeController.currentAnchor else {
+                return false
+            }
+            return DockSystemController.owningDisplayID(for: self.preferences.dockEdge) == target.id
+        },
+        cancelNudge: { [weak self] in self?.edgeController.cancelNudge() }
+    )
+
     private var statusItem: NSStatusItem?
     private let menu = NSMenu()
     private var refreshTimer: Timer?
     private var onboardingWindowController: OnboardingWindowController?
     private var isRestoringBeforeQuit = false
+    private var displaysAreAsleep = false
     private var eventTapWasRunning = false
     private var dockProtectionReadyAt = Date.distantFuture
 
@@ -33,7 +57,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         syncRunningAppBar()
         recordRuntimeDiagnostics()
         showOnboardingIfNeeded()
-        applyPinnedDock(after: 0.35, restoreCursor: true)
+        pinRecoveryController.updateDisplays(edgeController.allDisplays)
 
         NotificationCenter.default.addObserver(
             self,
@@ -41,6 +65,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             name: NSApplication.didChangeScreenParametersNotification,
             object: nil
         )
+
+        let workspaceCenter = NSWorkspace.shared.notificationCenter
+        for name in [NSWorkspace.willSleepNotification, NSWorkspace.screensDidSleepNotification] {
+            workspaceCenter.addObserver(self, selector: #selector(displaysWillSleep), name: name, object: nil)
+        }
+        for name in [NSWorkspace.didWakeNotification, NSWorkspace.screensDidWakeNotification] {
+            workspaceCenter.addObserver(self, selector: #selector(displaysDidWake), name: name, object: nil)
+        }
 
         refreshTimer = Timer.scheduledTimer(
             timeInterval: 2.0,
@@ -59,6 +91,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         isRestoringBeforeQuit = true
         refreshTimer?.invalidate()
+        pinRecoveryController.cancel()
         eventTapController.stop()
         runningAppBarController.stop()
 
@@ -72,6 +105,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         refreshTimer?.invalidate()
+        pinRecoveryController.cancel()
+        NotificationCenter.default.removeObserver(self)
+        NSWorkspace.shared.notificationCenter.removeObserver(self)
         eventTapController.stop()
         runningAppBarController.stop()
     }
@@ -358,7 +394,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     @objc private func refreshDisplays() {
         edgeController.refreshAnchor(force: true)
         runningAppBarController.refreshScreens(targetDisplayID: edgeController.currentAnchor?.id)
-        syncEventTap()
+        applyPinnedDock(after: 0.8, restoreCursor: true)
         rebuildMenu()
     }
 
@@ -387,14 +423,37 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @objc private func screenParametersChanged() {
+        guard !isRestoringBeforeQuit else { return }
         edgeController.refreshAnchor(force: true)
+        if !displaysAreAsleep {
+            pinRecoveryController.updateDisplays(edgeController.allDisplays)
+        }
         runningAppBarController.refreshScreens(targetDisplayID: edgeController.currentAnchor?.id)
+        syncRunningAppBar()
+        rebuildMenu()
+    }
+
+    @objc private func displaysWillSleep() {
+        displaysAreAsleep = true
+        pinRecoveryController.cancel()
+        runningAppBarController.stop()
+    }
+
+    @objc private func displaysDidWake() {
+        guard !isRestoringBeforeQuit else { return }
+        displaysAreAsleep = false
+        edgeController.refreshAnchor(force: true)
+        pinRecoveryController.updateDisplays(edgeController.allDisplays)
+        applyPinnedDock(after: 1.0, restoreCursor: true)
+        syncRunningAppBar()
         rebuildMenu()
     }
 
     @objc private func periodicRefresh() {
+        guard !isRestoringBeforeQuit, !displaysAreAsleep else { return }
         syncEventTap()
         edgeController.refreshAnchor()
+        pinRecoveryController.updateDisplays(edgeController.allDisplays)
         syncRunningAppBar()
         recordRuntimeDiagnostics()
     }
@@ -409,8 +468,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     private func syncEventTap() {
+        guard !isRestoringBeforeQuit, !displaysAreAsleep else { return }
         guard AXIsProcessTrusted() else {
             eventTapController.stop()
+            pinRecoveryController.cancel()
             eventTapWasRunning = false
             dockProtectionReadyAt = .distantFuture
             return
@@ -423,9 +484,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
         let isRunning = eventTapController.isOperational
         if isRunning && !eventTapWasRunning {
-            dockProtectionReadyAt = Date().addingTimeInterval(1.1)
-            edgeController.nudgePinnedDock(restoreCursor: true)
+            pinRecoveryController.requestPin(after: 0.35, restoreCursor: true)
         } else if !isRunning {
+            pinRecoveryController.cancel()
             dockProtectionReadyAt = .distantFuture
         }
         eventTapWasRunning = isRunning
@@ -433,9 +494,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private func applyPinnedDock(after delay: TimeInterval, restoreCursor: Bool) {
         syncEventTap()
-        DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
-            self?.edgeController.nudgePinnedDock(restoreCursor: restoreCursor)
-        }
+        pinRecoveryController.requestPin(after: delay, restoreCursor: restoreCursor)
     }
 
     private func syncRunningAppBar() {
@@ -443,6 +502,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let nativeDockDisplayID = DockSystemController.owningDisplayID(for: preferences.dockEdge)
         let canPreventNativeDock = AXIsProcessTrusted()
             && eventTapController.isOperational
+            && !displaysAreAsleep
+            && !pinRecoveryController.isRecovering
             && Date() >= dockProtectionReadyAt
             && nativeDockDisplayID == targetDisplayID
         runningAppBarController.setEnabled(

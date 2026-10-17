@@ -9,6 +9,7 @@ DockPin is intentionally small.
 - `PreferencesStore`: persists user choices in `UserDefaults`.
 - `EventTapController`: owns the Quartz event tap.
 - `DockEdgeController`: applies the soft pointer gate near the selected display edge.
+- `DockPinRecoveryController`: coalesces display topology changes and schedules bounded, cancellable pin attempts after reconnect or wake. Ignores screen notifications that only reflect Dock ownership changes.
 - `RunningAppBarController`: optionally shows a hover-activated running-app switcher on displays that do not own the Dock.
 - `LaunchAtLoginController`: wraps `SMAppService.mainApp`.
 

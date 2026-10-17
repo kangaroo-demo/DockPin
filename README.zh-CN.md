@@ -78,6 +78,8 @@ DockPin 的原理是使用 Quartz event tap 和辅助功能权限，在你选择
 
 打开 DockPin 后会自动生效。退出 DockPin 时会停止事件监听，并把 Dock 轻推回系统默认的外侧显示器边缘。
 
+拔掉目标显示器后，DockPin 会保留你的选择，并临时使用当前可用的屏幕。重新接上目标显示器或唤醒 Mac 后，会等待屏幕就绪并自动恢复 Dock 的目标位置，无需手动切换目标显示器。
+
 ## 推荐设置
 
 如果你的外接屏在上方、内置 Retina 屏在下方：
@@ -123,8 +125,8 @@ swift run DockPin --self-test-bar
 推送版本 tag 后会自动创建 GitHub Release：
 
 ```sh
-git tag -a v0.2.0 -m "DockPin 0.2.0"
-git push origin v0.2.0
+git tag -a v0.2.1 -m "DockPin 0.2.1"
+git push origin v0.2.1
 ```
 
 Release workflow 会在 macOS 上构建 `dist/DockPin.zip`，并上传到对应的 Release。如果配置了 Apple Developer secrets，也支持 Developer ID 签名和公证。见[签名与公证说明](docs/SIGNING_AND_NOTARIZATION.zh-CN.md)。

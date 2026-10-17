@@ -78,6 +78,8 @@ Click `DockPin` in the menu bar.
 
 Opening DockPin applies the selected display behavior automatically. Quitting DockPin stops the event tap and nudges the Dock back to the system's default outer display edge.
 
+DockPin remembers your target display when it is disconnected and temporarily uses an available display. Reconnecting the target display or waking the Mac automatically reapplies the pin after the displays settle, so you do not need to switch targets manually.
+
 ## Recommended Settings
 
 For a top external display with a built-in display below it:
@@ -123,8 +125,8 @@ swift run DockPin --self-test-bar
 Push a version tag to create a GitHub Release automatically:
 
 ```sh
-git tag -a v0.2.0 -m "DockPin 0.2.0"
-git push origin v0.2.0
+git tag -a v0.2.1 -m "DockPin 0.2.1"
+git push origin v0.2.1
 ```
 
 The release workflow builds `dist/DockPin.zip` on macOS and uploads it to the release. It also supports Developer ID signing and notarization when Apple Developer secrets are configured. See [Signing and Notarization](docs/SIGNING_AND_NOTARIZATION.md).
