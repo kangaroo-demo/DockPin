@@ -12,12 +12,16 @@ The website is deployed automatically when its source changes. GitHub repository
 
 ## Directory submissions
 
+Status snapshot: 2026-10-17. Follow each submission link for its current review state.
+
 | Directory | Submission | Status |
 | --- | --- | --- |
-| Awesome Mac | Being prepared | Not yet submitted |
-| Awesome macOS open-source applications | Being prepared | Not yet submitted |
+| Awesome Mac | [PR #3555](https://github.com/jaywcjlove/awesome-mac/pull/3555) | Submitted; maintainer review pending |
+| Awesome macOS open-source applications | [PR #1655](https://github.com/serhii-londar/open-source-mac-os-apps/pull/1655) | Submitted; maintainer review pending |
 
 Submission is a request for inclusion; it does not mean the app is already listed. Maintainers decide whether and when to merge.
+
+The Awesome Mac submission follows its [awesome-mac-maintainer skill](https://github.com/jaywcjlove/awesome-mac/blob/master/.codex/skills/awesome-mac-maintainer/SKILL.md), with matching entries in English, Chinese, Japanese, and Korean. The open-source applications submission changes only its application JSON record and includes the app icon and a menu screenshot.
 
 ## Community publishing
 
