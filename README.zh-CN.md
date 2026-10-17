@@ -6,15 +6,19 @@
 ![Swift 5.9](https://img.shields.io/badge/Swift-5.9-F05138?logo=swift)
 [![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-DockPin 是一个免费开源的 macOS 菜单栏小工具，用来解决多显示器场景下 Dock 跑错屏的问题。打开时它会帮助 Dock 停留在你选择的目标显示器上，退出时还原系统默认行为。
+**Mac 的 Dock 总跑到另一块屏幕？** DockPin 是一个免费开源的 macOS 菜单栏小工具，帮助 Dock 留在你选择的显示器上。退出时会还原系统默认行为。
 
 它主要解决多显示器场景里 Dock 跑错屏的问题，尤其是上下排列显示器时，比如外接屏在上方、MacBook 内置屏在下方。
 
-[下载 DockPin.zip](https://github.com/kangaroo-demo/DockPin/releases/latest/download/DockPin.zip) · [所有版本](https://github.com/kangaroo-demo/DockPin/releases)
+[下载 Mac 版](https://github.com/kangaroo-demo/DockPin/releases/latest/download/DockPin.zip) · [官网与快速设置](https://kangaroo-demo.github.io/DockPin/zh/) · [English](README.md)
 
-![DockPin 演示](docs/images/dockpin-demo.gif)
+免费开源 · macOS 13+ · 原生 Swift · App 无需账号、不收集分析数据、不发起网络请求。
 
-[English README](README.md)
+如果 DockPin 解决了你的多屏困扰，欢迎 **[在 GitHub 点个 ⭐](https://github.com/kangaroo-demo/DockPin)**，或分享给同样使用多屏的朋友。
+
+![DockPin 原理示意：将 Dock 留在选定的上方显示器](docs/images/dockpin-demo.gif)
+
+*原理演示动画。实际菜单截图和安装说明见下文。*
 
 ## 它能做什么
 
@@ -29,8 +33,6 @@ DockPin 是一个免费开源的 macOS 菜单栏小工具，用来解决多显�
 - 支持开机自启动。
 - 包含首次设置向导，用于说明 Gatekeeper 和辅助功能权限。
 - 支持英文和简体中文界面。
-
-常见搜索词：macOS Dock 工具、多显示器 Dock、外接显示器、菜单栏 App、Swift、AppKit。
 
 ## 它不能做什么
 

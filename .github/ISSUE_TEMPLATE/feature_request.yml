@@ -1,0 +1,14 @@
+name: Feature request / 功能建议
+description: Suggest an improvement for your multi-display workflow. / 提出多屏使用体验方面的建议。
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like to improve? / 希望改善什么？
+      description: Describe your display setup and the problem you want to solve. / 请描述显示器布局和想解决的问题。
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested behavior / 期望的使用方式

@@ -6,15 +6,19 @@
 ![Swift 5.9](https://img.shields.io/badge/Swift-5.9-F05138?logo=swift)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-DockPin is a free, open-source macOS menu bar utility for multi-monitor Dock control. It helps keep the macOS Dock on a target display while the app is running.
+**The Dock keeps moving to the wrong monitor?** DockPin is a free, open-source macOS menu bar app that helps keep it on the display you choose.
 
 It is built for multiple-display setups where the Dock keeps moving to the wrong monitor, especially vertical layouts where one display sits above another.
 
-[Download DockPin.zip](https://github.com/kangaroo-demo/DockPin/releases/latest/download/DockPin.zip) · [All Releases](https://github.com/kangaroo-demo/DockPin/releases)
+[Download for Mac](https://github.com/kangaroo-demo/DockPin/releases/latest/download/DockPin.zip) · [Website & quick setup](https://kangaroo-demo.github.io/DockPin/) · [简体中文](README.zh-CN.md)
 
-![DockPin demo](docs/images/dockpin-demo.gif)
+Free · macOS 13+ · Native Swift · No account, analytics, or network requests from the app.
 
-[简体中文文档](README.zh-CN.md)
+If DockPin helps your setup, **[give it a ⭐ on GitHub](https://github.com/kangaroo-demo/DockPin)** or share it with another multi-monitor Mac user.
+
+![Illustrated demo of DockPin keeping the Dock on the selected upper display](docs/images/dockpin-demo.gif)
+
+*Illustrated demo. Actual app screenshots and setup instructions are below.*
 
 ## What It Does
 
@@ -29,8 +33,6 @@ It is built for multiple-display setups where the Dock keeps moving to the wrong
 - Supports Launch at Login.
 - Includes a first-run setup guide for Gatekeeper and Accessibility permission.
 - Supports English and Simplified Chinese UI.
-
-Common search terms: macOS Dock utility, multi-monitor Dock fix, multiple displays, menu bar app, Swift, AppKit.
 
 ## What It Does Not Do
 

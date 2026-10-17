@@ -1,0 +1,31 @@
+name: Bug report / 问题反馈
+description: Tell us what happened with your Dock or display setup. / 描述你的 Dock 或多屏问题。
+title: "[Bug] "
+body:
+  - type: input
+    id: versions
+    attributes:
+      label: macOS and DockPin versions / 系统与 App 版本
+      placeholder: "macOS 15.5, DockPin 0.2.1"
+    validations:
+      required: true
+  - type: textarea
+    id: layout
+    attributes:
+      label: Display layout / 显示器排列
+      description: Include the target display, Dock edge, and which screen is above or beside the other. / 请说明目标屏、Dock 边缘，以及上下或左右排列。
+      placeholder: "External monitor above MacBook; target = external; edge = bottom."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: What happened? / 出现了什么问题？
+      description: Describe the steps, expected behavior, and actual behavior. / 请写明操作步骤、期望结果和实际结果。
+    validations:
+      required: true
+  - type: textarea
+    id: permissions
+    attributes:
+      label: Accessibility status / 辅助功能状态
+      description: What status does DockPin show in its menu? Screenshots are optional; remove any personal information. / 菜单里显示什么状态？可附截图，请去除个人信息。

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DockPin — 让 macOS Dock 留在你选择的显示器上</title>
+  <meta name="description" content="Mac 外接显示器后 Dock 总跑到另一块屏幕？DockPin 是免费开源的 macOS 菜单栏工具，帮助 Dock 停留在目标显示器，支持上下屏排列、重连和唤醒后自动恢复。">
+  <link rel="canonical" href="https://kangaroo-demo.github.io/DockPin/zh/">
+  <link rel="sitemap" type="application/xml" href="../sitemap.xml">
+  <link rel="alternate" hreflang="en" href="https://kangaroo-demo.github.io/DockPin/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://kangaroo-demo.github.io/DockPin/zh/">
+  <link rel="alternate" hreflang="x-default" href="https://kangaroo-demo.github.io/DockPin/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="DockPin — Dock 留在你选的屏幕。">
+  <meta property="og:description" content="外接屏在上，笔记本在下，Dock 却总跑错屏？试试这个免费开源的 Mac 菜单栏小工具。">
+  <meta property="og:url" content="https://kangaroo-demo.github.io/DockPin/zh/">
+  <meta property="og:image" content="https://kangaroo-demo.github.io/DockPin/images/social-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="DockPin 帮助 Dock 留在上下屏布局中选定的外接显示器上。">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="../images/app-icon.png">
+  <link rel="stylesheet" href="../assets/site.css">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"DockPin","url":"https://kangaroo-demo.github.io/DockPin/zh/","description":"免费开源的 macOS 菜单栏工具，帮助多显示器用户把 Dock 留在目标屏幕上。","operatingSystem":"macOS 13 or later","applicationCategory":"UtilitiesApplication","downloadUrl":"https://github.com/kangaroo-demo/DockPin/releases/latest/download/DockPin.zip","image":"https://kangaroo-demo.github.io/DockPin/images/social-card.png","license":"https://github.com/kangaroo-demo/DockPin/blob/main/LICENSE","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到正文</a>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="./" aria-label="DockPin 首页"><img src="../images/app-icon.png" width="38" height="38" alt="">DockPin</a>
+      <nav aria-label="主导航"><a href="#install">安装</a><a href="https://github.com/kangaroo-demo/DockPin">GitHub ↗</a><a href="../" lang="en" hreflang="en">English</a></nav>
+    </header>
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div>
+          <p class="eyebrow">给多屏 Mac 的一点小修复</p>
+          <h1 id="hero-title">Dock 留在<br><span>你选的屏幕。</span></h1>
+          <p class="intro">外接屏在上，笔记本在下，Dock 却总跑错屏？用一个轻巧、免费的菜单栏工具，选好它该待的地方。</p>
+          <div class="actions"><a class="button primary" href="https://github.com/kangaroo-demo/DockPin/releases/latest/download/DockPin.zip">下载 Mac 版 <span aria-hidden="true">↓</span></a><a class="button" href="https://github.com/kangaroo-demo/DockPin">☆ 在 GitHub 点 Star</a></div>
+          <p class="micro">macOS 13+ · 免费开源 · 无需账号</p>
+        </div>
+        <div class="scene" role="img" aria-label="示意图：外接显示器在 MacBook 上方，Dock 留在选定的上方显示器。">
+          <div class="monitor external"><div class="screen-bar"><span>外接显示器</span><span class="target">目标屏幕</span></div><div class="window"></div><div class="window back"></div><span class="dock-label">Dock 留在这里 ↙</span><div class="dock"><i></i><i></i><i></i><i></i><i></i></div></div>
+          <div class="monitor laptop"><div class="screen-bar"><span>MacBook 内置屏</span></div><div class="window"></div></div>
+          <span class="scene-caption">屏幕布局示意</span>
+        </div>
+      </section>
+      <section class="benefits" aria-label="功能介绍">
+        <div><h2>选好目标屏幕</h2><p>选择显示器和底部、左侧或右侧边缘，帮助 Dock 留在目标位置，同时保留正常跨屏移动。</p></div>
+        <div><h2>重新接屏，继续工作</h2><p>记住你的显示器选择，外接屏重连或 Mac 唤醒后自动重新应用，无需来回切换目标。</p></div>
+        <div><h2>安静地待在菜单栏</h2><p>原生 Swift 小工具，在本机工作。App 无需账号、不收集分析数据，也不发起网络请求。</p></div>
+      </section>
+      <section class="section" aria-labelledby="demo-title">
+        <div class="section-title"><h2 id="demo-title">一个熟悉的困扰，<br>一个小小的修复。</h2><p>为每天使用多块屏幕、总要把 Dock 挪回来的你准备。</p></div>
+        <figure><div class="demo"><picture><source media="(prefers-reduced-motion: reduce)" srcset="../images/demo-still.png"><img src="../images/dockpin-demo.gif" width="854" height="480" loading="lazy" alt="DockPin 前后对比示意：Dock 从下方内置屏回到选定的上方外接屏。"></picture></div><figcaption>原理演示动画。<a href="https://github.com/kangaroo-demo/DockPin/blob/main/README.zh-CN.md#使用">查看实际菜单截图和完整使用说明。</a></figcaption></figure>
+      </section>
+      <section class="install" id="install" aria-labelledby="install-title">
+        <div class="section-title"><h2 id="install-title">三步，少一点折腾。</h2><a href="https://github.com/kangaroo-demo/DockPin/releases/latest">查看最新版本 ↗</a></div>
+        <ol class="steps">
+          <li><h3>下载并打开</h3><p><a href="https://github.com/kangaroo-demo/DockPin/releases/latest/download/DockPin.zip">下载 DockPin.zip</a>，解压后把 DockPin.app 移到“应用程序”。</p></li>
+          <li><h3>允许辅助功能</h3><p>在“系统设置 → 隐私与安全性 → 辅助功能”中启用 DockPin，然后重新打开 App。</p></li>
+          <li><h3>选择目标屏幕</h3><p>点击菜单栏图标，选好目标显示器和 Dock 边缘，然后继续工作。</p></li>
+        </ol>
+        <details><summary>macOS 提示无法验证 DockPin？</summary><p>社区构建可能尚未公证。尝试打开后，前往“系统设置 → 隐私与安全性”，找到 DockPin 并选择“仍要打开”。你也可以<a href="https://github.com/kangaroo-demo/DockPin/blob/main/README.zh-CN.md#从源码构建">从开源代码自行构建</a>。</p></details>
+      </section>
+      <section class="section faq" aria-labelledby="faq-title">
+        <h2 id="faq-title">使用前，你可能想知道。</h2>
+        <details><summary>Mac 的 Dock 为什么会跑到另一块屏幕？</summary><p>macOS 可能根据鼠标在显示器边缘的移动切换 Dock 所在屏幕。在外接屏位于 MacBook 上方的布局中，这尤其容易打断工作。DockPin 会帮助系统继续使用选定屏幕的 Dock 边缘。</p></details>
+        <details><summary>所有显示器排列都能使用吗？</summary><p>所选边缘有一部分外露时效果更好。如果整条边缘被另一块显示器覆盖，macOS 的公开能力可能无法稳定指定位置。共享边界保持可穿透；按住 Option 可以立即穿过正在观察的边缘。</p></details>
+        <details><summary>为什么需要辅助功能权限？</summary><p>DockPin 会观察鼠标移动，并在选定边缘附近短暂调整鼠标位置。App 在本机运行，不发起网络请求，不收集分析数据。<a href="https://github.com/kangaroo-demo/DockPin/blob/main/docs/PRIVACY.zh-CN.md">查看隐私说明。</a></p></details>
+        <details><summary>拔掉显示器或退出 App 后会怎样？</summary><p>目标显示器断开时，会保留原选择并临时使用可用屏幕；重新接上或唤醒后重新应用设置。退出时会停止保护，并把 Dock 轻推回系统默认的外侧边缘。</p></details>
+      </section>
+      <section class="support" aria-labelledby="support-title"><div><h2 id="support-title">如果帮你少折腾了一点。</h2><p>欢迎在 GitHub 点个 Star，或分享给同样使用多屏的朋友。</p></div><a class="button" href="https://github.com/kangaroo-demo/DockPin">☆ 给 DockPin 点 Star</a></section>
+    </main>
+    <footer><span>DockPin · 免费开源，采用 MIT 许可证。</span><div><a href="https://github.com/kangaroo-demo/DockPin">源代码</a><a href="https://github.com/kangaroo-demo/DockPin/issues/new/choose">反馈问题</a><a href="../" lang="en">English</a></div></footer>
+  </div>
+</body>
+</html>

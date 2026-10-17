@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Installation and usage / 安装与使用
+    url: https://kangaroo-demo.github.io/DockPin/#install
+    about: Download, permissions, and common questions. / 下载、权限和常见问题。
